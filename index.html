@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Staff Ledger</title>
+<script src="vendor/react.min.js"></script>
+<script src="vendor/react-dom.min.js"></script>
+<script src="vendor/babel.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f4f2ee;
+    color: #1f2328;
+    min-height: 100vh;
+  }
+  .shell { max-width: 480px; margin: 0 auto; padding: 16px 16px 48px; }
+  .brand { text-align: center; padding: 28px 0 20px; }
+  .brand h1 { font-size: 26px; letter-spacing: -0.5px; }
+  .brand p { color: #6b7280; font-size: 14px; margin-top: 4px; }
+  .card {
+    background: #fff; border: 1px solid #e5e1da; border-radius: 14px;
+    padding: 18px; margin-bottom: 14px; box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  }
+  .tabs { display: flex; gap: 6px; margin-bottom: 16px; }
+  .tabs button {
+    flex: 1; padding: 10px 6px; border: 1px solid #e5e1da; background: #faf9f7;
+    border-radius: 10px; font-size: 13px; font-weight: 600; color: #57606a; cursor: pointer;
+  }
+  .tabs button.active { background: #1f2328; color: #fff; border-color: #1f2328; }
+  label { display: block; font-size: 13px; font-weight: 600; margin: 12px 0 5px; color: #374151; }
+  input, select {
+    width: 100%; padding: 11px 12px; border: 1px solid #d6d1c8; border-radius: 10px;
+    font-size: 16px; background: #fff;
+  }
+  input:focus, select:focus { outline: 2px solid #1f2328; outline-offset: -1px; }
+  .btn {
+    width: 100%; padding: 13px; margin-top: 16px; border: none; border-radius: 10px;
+    background: #1f2328; color: #fff; font-size: 15px; font-weight: 700; cursor: pointer;
+  }
+  .btn.secondary { background: #fff; color: #1f2328; border: 1px solid #d6d1c8; }
+  .btn.danger { background: #b42318; }
+  .btn.small { width: auto; padding: 8px 14px; font-size: 13px; margin-top: 0; }
+  .error {
+    background: #fef2f2; border: 1px solid #fecaca; color: #b42318;
+    padding: 10px 12px; border-radius: 10px; font-size: 13px; margin-top: 12px;
+  }
+  .notice {
+    background: #fffbeb; border: 1px solid #fde68a; color: #92400e;
+    padding: 10px 12px; border-radius: 10px; font-size: 13px; margin-top: 12px;
+  }
+  .biz-option {
+    display: block; width: 100%; text-align: left; padding: 11px 12px; margin-top: 8px;
+    border: 1px solid #d6d1c8; border-radius: 10px; background: #fff; cursor: pointer; font-size: 15px;
+  }
+  .biz-option.selected { border-color: #1f2328; outline: 2px solid #1f2328; outline-offset: -1px; }
+  .biz-option .meta { display: block; font-size: 12px; color: #6b7280; margin-top: 2px; }
+  .owner-link {
+    display: block; margin: 24px auto 0; background: none; border: none;
+    color: #9ca3af; font-size: 12px; text-decoration: underline; cursor: pointer;
+  }
+  .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .topbar h2 { font-size: 19px; }
+  .topbar .sub { font-size: 12px; color: #6b7280; }
+  .row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .list-item { padding: 12px 0; border-bottom: 1px solid #f0ede8; }
+  .list-item:last-child { border-bottom: none; }
+  .muted { color: #6b7280; font-size: 13px; }
+  .amount-credit { color: #067647; font-weight: 700; }
+  .amount-debit { color: #b42318; font-weight: 700; }
+  .balance-box { text-align: center; padding: 14px; background: #faf9f7; border-radius: 10px; margin-bottom: 4px; }
+  .balance-box .big { font-size: 24px; font-weight: 800; }
+  .pill {
+    font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 999px;
+    background: #eef2ff; color: #3730a3;
+  }
+  .link-btn { background: none; border: none; color: #1f2328; font-weight: 700; font-size: 13px; cursor: pointer; text-decoration: underline; }
+  .section-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="react">
+const { useState, useEffect } = React;
+
+// NOTE: this app is fully client-side. The master key and all PINs are visible
+// to anyone who inspects the page or localStorage — fine for personal use,
+// not a real security boundary.
+const SUPER_ADMIN_KEY = "kapraghar-owner-2026";
+const STORAGE_KEY = "staff_ledger_data_v1";
+
+const uid = () =>
+  window.crypto && crypto.randomUUID
+    ? crypto.randomUUID()
+    : Date.now() + "-" + Math.random().toString(36).slice(2);
+
+function loadData() {
+  try {
+    const d = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (d && Array.isArray(d.businesses)) return d;
+  } catch (e) {}
+  return { businesses: [] };
+}
+
+const fmtDate = (iso) =>
+  new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+const fmtMoney = (n) => "₹" + Number(n || 0).toLocaleString("en-IN");
+
+const isPin = (s) => /^\d{4}$/.test(s);
+const isPhone = (s) => /^\d{10}$/.test(s);
+
+function BizPicker({ businesses, search, onSearch, selectedId, onSelect, label }) {
+  const matches = search.trim()
+    ? businesses.filter((b) => b.name.toLowerCase().includes(search.trim().toLowerCase()))
+    : [];
+  return (
+    <div>
+      <label>{label}</label>
+      <input
+        placeholder="Type business name…"
+        value={search}
+        onChange={(e) => { onSearch(e.target.value); onSelect(null); }}
+      />
+      {search.trim() !== "" && matches.length === 0 && (
+        <div className="notice">No business found with that name.</div>
+      )}
+      {matches.map((b) => (
+        <button
+          key={b.id}
+          type="button"
+          className={"biz-option" + (selectedId === b.id ? " selected" : "")}
+          onClick={() => onSelect(b.id)}
+        >
+          {b.name}
+          <span className="meta">
+            Created {fmtDate(b.createdAt)} · {b.employees.length} employee{b.employees.length === 1 ? "" : "s"}
+          </span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function Landing({ businesses, onAdminLogin, onSignup, onEmployeeLogin, onSuperLogin }) {
+  const [tab, setTab] = useState("admin-login");
+
+  // Every tab keeps its own PIN state so digits can never carry over
+  // between login and signup (the original wrong-PIN bug).
+  const [loginSearch, setLoginSearch] = useState("");
+  const [loginBizId, setLoginBizId] = useState(null);
+  const [loginPin, setLoginPin] = useState("");
+
+  const [signupName, setSignupName] = useState("");
+  const [signupOwner, setSignupOwner] = useState("");
+  const [signupPin, setSignupPin] = useState("");
+  const [signupConfirm, setSignupConfirm] = useState("");
+  const [dupWarned, setDupWarned] = useState(false);
+
+  const [empSearch, setEmpSearch] = useState("");
+  const [empBizId, setEmpBizId] = useState(null);
+  const [empPhone, setEmpPhone] = useState("");
+  const [empPin, setEmpPin] = useState("");
+
+  const [superKey, setSuperKey] = useState("");
+  const [error, setError] = useState("");
+
+  const switchTab = (t) => {
+    setTab(t);
+    setError("");
+    setLoginPin("");
+    setSignupPin("");
+    setSignupConfirm("");
+    setEmpPin("");
+    setSuperKey("");
+    setDupWarned(false);
+  };
+
+  const submitAdminLogin = (e) => {
+    e.preventDefault();
+    setError("");
+    const biz = businesses.find((b) => b.id === loginBizId);
+    if (!biz) { setError("Select your business from the list first."); return; }
+    if (biz.pin !== loginPin) {
+      setError("Wrong PIN for this business. If you have two businesses with the same name, check the creation date and try the other one.");
+      setLoginPin("");
+      return;
+    }
+    onAdminLogin(biz.id);
+  };
+
+  const submitSignup = (e) => {
+    e.preventDefault();
+    setError("");
+    const name = signupName.trim();
+    if (!name) { setError("Enter a business name."); return; }
+    if (!isPin(signupPin)) { setError("PIN must be exactly 4 digits."); return; }
+    if (signupPin !== signupConfirm) {
+      setError("PINs do not match. Re-enter both.");
+      setSignupPin("");
+      setSignupConfirm("");
+      return;
+    }
+    const dup = businesses.find((b) => b.name.trim().toLowerCase() === name.toLowerCase());
+    if (dup && !dupWarned) {
+      setDupWarned(true);
+      setError('A business named "' + dup.name + '" already exists (created ' + fmtDate(dup.createdAt) + "). If that is yours, log in instead. Tap Create again to make a second one anyway.");
+      return;
+    }
+    onSignup({ name, ownerName: signupOwner.trim(), pin: signupPin });
+  };
+
+  const submitEmployeeLogin = (e) => {
+    e.preventDefault();
+    setError("");
+    const biz = businesses.find((b) => b.id === empBizId);
+    if (!biz) { setError("Select your business from the list first."); return; }
+    const emp = biz.employees.find((x) => x.phone === empPhone.trim());
+    if (!emp) {
+      setError("No employee with this phone number in the selected business. If two businesses share a name, check the creation date — your account may be under the other one.");
+      setEmpPin("");
+      return;
+    }
+    if (emp.pin !== empPin) {
+      setError("Wrong PIN. Try again.");
+      setEmpPin("");
+      return;
+    }
+    onEmployeeLogin(biz.id, emp.id);
+  };
+
+  const submitSuper = (e) => {
+    e.preventDefault();
+    if (superKey === SUPER_ADMIN_KEY) { onSuperLogin(); return; }
+    setError("Wrong master key.");
+    setSuperKey("");
+  };
+
+  return (
+    <div>
+      <div className="brand">
+        <h1>Staff Ledger</h1>
+        <p>PIN-based staff &amp; payment register for your shop</p>
+      </div>
+
+      {tab !== "super" && (
+        <div className="tabs">
+          <button className={tab === "admin-login" ? "active" : ""} onClick={() => switchTab("admin-login")}>Admin login</button>
+          <button className={tab === "signup" ? "active" : ""} onClick={() => switchTab("signup")}>New business</button>
+          <button className={tab === "employee" ? "active" : ""} onClick={() => switchTab("employee")}>Employee login</button>
+        </div>
+      )}
+
+      <div className="card">
+        {tab === "admin-login" && (
+          <form onSubmit={submitAdminLogin}>
+            <BizPicker
+              businesses={businesses}
+              search={loginSearch} onSearch={setLoginSearch}
+              selectedId={loginBizId} onSelect={setLoginBizId}
+              label="Find your business"
+            />
+            <label>Admin PIN (4 digits)</label>
+            <input type="password" inputMode="numeric" maxLength="4" value={loginPin}
+              onChange={(e) => setLoginPin(e.target.value.replace(/\D/g, ""))} />
+            {error && <div className="error">{error}</div>}
+            <button className="btn" type="submit">Log in</button>
+          </form>
+        )}
+
+        {tab === "signup" && (
+          <form onSubmit={submitSignup}>
+            <label>Business name</label>
+            <input value={signupName} placeholder="e.g. Kapra Ghar"
+              onChange={(e) => { setSignupName(e.target.value); setDupWarned(false); }} />
+            <label>Owner name (optional)</label>
+            <input value={signupOwner} onChange={(e) => setSignupOwner(e.target.value)} />
+            <div className="grid2">
+              <div>
+                <label>Choose a 4-digit PIN</label>
+                <input type="password" inputMode="numeric" maxLength="4" value={signupPin}
+                  onChange={(e) => setSignupPin(e.target.value.replace(/\D/g, ""))} />
+              </div>
+              <div>
+                <label>Confirm PIN</label>
+                <input type="password" inputMode="numeric" maxLength="4" value={signupConfirm}
+                  onChange={(e) => setSignupConfirm(e.target.value.replace(/\D/g, ""))} />
+              </div>
+            </div>
+            {error && <div className={dupWarned ? "notice" : "error"}>{error}</div>}
+            <button className="btn" type="submit">Create business</button>
+          </form>
+        )}
+
+        {tab === "employee" && (
+          <form onSubmit={submitEmployeeLogin}>
+            <BizPicker
+              businesses={businesses}
+              search={empSearch} onSearch={setEmpSearch}
+              selectedId={empBizId} onSelect={setEmpBizId}
+              label="Find your business"
+            />
+            <label>Your phone number</label>
+            <input inputMode="numeric" maxLength="10" value={empPhone}
+              onChange={(e) => setEmpPhone(e.target.value.replace(/\D/g, ""))} />
+            <label>Your PIN (4 digits)</label>
+            <input type="password" inputMode="numeric" maxLength="4" value={empPin}
+              onChange={(e) => setEmpPin(e.target.value.replace(/\D/g, ""))} />
+            {error && <div className="error">{error}</div>}
+            <button className="btn" type="submit">Log in</button>
+          </form>
+        )}
+
+        {tab === "super" && (
+          <form onSubmit={submitSuper}>
+            <div className="section-title">Platform owner login</div>
+            <label>Master key</label>
+            <input type="password" value={superKey} onChange={(e) => setSuperKey(e.target.value)} />
+            {error && <div className="error">{error}</div>}
+            <button className="btn" type="submit">Enter</button>
+            <button className="btn secondary" type="button" onClick={() => switchTab("admin-login")}>Back</button>
+          </form>
+        )}
+      </div>
+
+      {tab !== "super" && (
+        <button className="owner-link" onClick={() => switchTab("super")}>Platform owner login</button>
+      )}
+    </div>
+  );
+}
+
+function EmployeeForm({ business, onAdd, onCancel }) {
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [pin, setPin] = useState("");
+  const [error, setError] = useState("");
+
+  const submit = (e) => {
+    e.preventDefault();
+    setError("");
+    if (!name.trim()) { setError("Enter the employee's name."); return; }
+    if (!isPhone(phone)) { setError("Phone number must be exactly 10 digits."); return; }
+    if (business.employees.some((x) => x.phone === phone)) {
+      setError("An employee with this phone number already exists in this business.");
+      return;
+    }
+    if (!isPin(pin)) { setError("PIN must be exactly 4 digits."); return; }
+    onAdd({ name: name.trim(), phone, pin });
+  };
+
+  return (
+    <form onSubmit={submit}>
+      <label>Employee name</label>
+      <input value={name} onChange={(e) => setName(e.target.value)} />
+      <label>Phone number (used to log in)</label>
+      <input inputMode="numeric" maxLength="10" value={phone}
+        onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))} />
+      <label>Employee PIN (4 digits)</label>
+      <input inputMode="numeric" maxLength="4" value={pin}
+        onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))} />
+      {error && <div className="error">{error}</div>}
+      <button className="btn" type="submit">Add employee</button>
+      <button className="btn secondary" type="button" onClick={onCancel}>Cancel</button>
+    </form>
+  );
+}
+
+function Ledger({ business, employee, readOnly, onAddEntry, onDeleteEntry }) {
+  const [type, setType] = useState("debit");
+  const [amount, setAmount] = useState("");
+  const [note, setNote] = useState("");
+  const [error, setError] = useState("");
+
+  const entries = business.entries
+    .filter((en) => en.employeeId === employee.id)
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
+  const balance = entries.reduce(
+    (sum, en) => sum + (en.type === "credit" ? en.amount : -en.amount), 0
+  );
+
+  const submit = (e) => {
+    e.preventDefault();
+    setError("");
+    const amt = Number(amount);
+    if (!amt || amt <= 0) { setError("Enter an amount greater than 0."); return; }
+    onAddEntry({ employeeId: employee.id, type, amount: amt, note: note.trim() });
+    setAmount("");
+    setNote("");
+  };
+
+  return (
+    <div>
+      <div className="balance-box">
+        <div className="muted">Balance due to {employee.name}</div>
+        <div className={"big " + (balance >= 0 ? "amount-credit" : "amount-debit")}>
+          {fmtMoney(Math.abs(balance))}{balance < 0 ? " (advance taken)" : ""}
+        </div>
+      </div>
+
+      {!readOnly && (
+        <form onSubmit={submit} style={{ marginBottom: 8 }}>
+          <div className="grid2">
+            <div>
+              <label>Entry type</label>
+              <select value={type} onChange={(e) => setType(e.target.value)}>
+                <option value="credit">Salary / bonus (owed to staff)</option>
+                <option value="debit">Advance / payment given</option>
+              </select>
+            </div>
+            <div>
+              <label>Amount (₹)</label>
+              <input inputMode="numeric" value={amount}
+                onChange={(e) => setAmount(e.target.value.replace(/[^\d]/g, ""))} />
+            </div>
+          </div>
+          <label>Note (optional)</label>
+          <input value={note} placeholder="e.g. Diwali advance" onChange={(e) => setNote(e.target.value)} />
+          {error && <div className="error">{error}</div>}
+          <button className="btn" type="submit">Add entry</button>
+        </form>
+      )}
+
+      <div className="section-title" style={{ marginTop: 14 }}>Entries</div>
+      {entries.length === 0 && <div className="muted">No entries yet.</div>}
+      {entries.map((en) => (
+        <div key={en.id} className="list-item row">
+          <div>
+            <div className={en.type === "credit" ? "amount-credit" : "amount-debit"}>
+              {en.type === "credit" ? "+" : "−"}{fmtMoney(en.amount)}
+            </div>
+            <div className="muted">
+              {fmtDate(en.date)}{en.note ? " · " + en.note : ""}
+            </div>
+          </div>
+          {!readOnly && (
+            <button className="btn danger small" onClick={() => {
+              if (window.confirm("Delete this entry?")) onDeleteEntry(en.id);
+            }}>Delete</button>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function AdminDashboard({ business, onUpdate, onLogout }) {
+  const [view, setView] = useState("list"); // list | add | ledger
+  const [activeEmpId, setActiveEmpId] = useState(null);
+  const activeEmp = business.employees.find((x) => x.id === activeEmpId);
+
+  const addEmployee = (emp) => {
+    onUpdate({
+      ...business,
+      employees: [...business.employees, { ...emp, id: uid(), createdAt: new Date().toISOString() }],
+    });
+    setView("list");
+  };
+
+  const removeEmployee = (empId) => {
+    if (!window.confirm("Remove this employee and all their ledger entries?")) return;
+    onUpdate({
+      ...business,
+      employees: business.employees.filter((x) => x.id !== empId),
+      entries: business.entries.filter((x) => x.employeeId !== empId),
+    });
+    setView("list");
+    setActiveEmpId(null);
+  };
+
+  const addEntry = (entry) => {
+    onUpdate({
+      ...business,
+      entries: [...business.entries, { ...entry, id: uid(), date: new Date().toISOString() }],
+    });
+  };
+
+  const deleteEntry = (entryId) => {
+    onUpdate({ ...business, entries: business.entries.filter((x) => x.id !== entryId) });
+  };
+
+  return (
+    <div>
+      <div className="topbar">
+        <div>
+          <h2>{business.name}</h2>
+          <div className="sub">Admin · created {fmtDate(business.createdAt)}</div>
+        </div>
+        <button className="btn secondary small" onClick={onLogout}>Log out</button>
+      </div>
+
+      {view === "list" && (
+        <div className="card">
+          <div className="row" style={{ marginBottom: 8 }}>
+            <div className="section-title">Employees ({business.employees.length})</div>
+            <button className="btn small" onClick={() => setView("add")}>+ Add</button>
+          </div>
+          {business.employees.length === 0 && (
+            <div className="muted">No employees yet. Add your first employee to start the ledger.</div>
+          )}
+          {business.employees.map((emp) => (
+            <div key={emp.id} className="list-item row">
+              <div>
+                <div style={{ fontWeight: 600 }}>{emp.name}</div>
+                <div className="muted">{emp.phone}</div>
+              </div>
+              <button className="link-btn" onClick={() => { setActiveEmpId(emp.id); setView("ledger"); }}>
+                Open ledger
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {view === "add" && (
+        <div className="card">
+          <div className="section-title">Add employee</div>
+          <EmployeeForm business={business} onAdd={addEmployee} onCancel={() => setView("list")} />
+        </div>
+      )}
+
+      {view === "ledger" && activeEmp && (
+        <div className="card">
+          <div className="row" style={{ marginBottom: 10 }}>
+            <div>
+              <div className="section-title">{activeEmp.name}</div>
+              <div className="muted">{activeEmp.phone}</div>
+            </div>
+            <button className="link-btn" onClick={() => setView("list")}>← Back</button>
+          </div>
+          <Ledger business={business} employee={activeEmp}
+            onAddEntry={addEntry} onDeleteEntry={deleteEntry} />
+          <button className="btn danger" onClick={() => removeEmployee(activeEmp.id)}>
+            Remove employee
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function EmployeeDashboard({ business, employee, onLogout }) {
+  return (
+    <div>
+      <div className="topbar">
+        <div>
+          <h2>{employee.name}</h2>
+          <div className="sub">{business.name}</div>
+        </div>
+        <button className="btn secondary small" onClick={onLogout}>Log out</button>
+      </div>
+      <div className="card">
+        <Ledger business={business} employee={employee} readOnly />
+      </div>
+    </div>
+  );
+}
+
+function SuperDashboard({ businesses, onDelete, onLogout }) {
+  const [openId, setOpenId] = useState(null);
+  return (
+    <div>
+      <div className="topbar">
+        <div>
+          <h2>Platform owner</h2>
+          <div className="sub">{businesses.length} business{businesses.length === 1 ? "" : "es"} registered</div>
+        </div>
+        <button className="btn secondary small" onClick={onLogout}>Log out</button>
+      </div>
+      <div className="notice" style={{ marginBottom: 14 }}>
+        Support view: owner PINs are shown here so you can help users who are locked out.
+      </div>
+      {businesses.length === 0 && <div className="card muted">No businesses registered yet.</div>}
+      {businesses.map((b) => (
+        <div key={b.id} className="card">
+          <div className="row">
+            <div>
+              <div style={{ fontWeight: 700 }}>{b.name}</div>
+              <div className="muted">
+                Created {fmtDate(b.createdAt)} · {b.employees.length} employee{b.employees.length === 1 ? "" : "s"}
+                {b.ownerName ? " · Owner: " + b.ownerName : ""}
+              </div>
+            </div>
+            <button className="link-btn" onClick={() => setOpenId(openId === b.id ? null : b.id)}>
+              {openId === b.id ? "Hide" : "Details"}
+            </button>
+          </div>
+          {openId === b.id && (
+            <div style={{ marginTop: 10 }}>
+              <div className="muted" style={{ marginBottom: 8 }}>
+                Admin PIN: <span className="pill">{b.pin}</span>
+              </div>
+              {b.employees.map((emp) => (
+                <div key={emp.id} className="list-item">
+                  <span style={{ fontWeight: 600 }}>{emp.name}</span>
+                  <span className="muted"> · {emp.phone} · PIN {emp.pin}</span>
+                </div>
+              ))}
+              <button className="btn danger" onClick={() => {
+                if (window.confirm('Delete "' + b.name + '" and ALL its data? This cannot be undone.')) onDelete(b.id);
+              }}>Delete this business</button>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function App() {
+  const [data, setData] = useState(loadData);
+  const [session, setSession] = useState(null); // {role, businessId, employeeId}
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }, [data]);
+
+  const updateBusiness = (updated) => {
+    setData((d) => ({
+      ...d,
+      businesses: d.businesses.map((b) => (b.id === updated.id ? updated : b)),
+    }));
+  };
+
+  const signup = ({ name, ownerName, pin }) => {
+    const biz = {
+      id: uid(), name, ownerName, pin,
+      createdAt: new Date().toISOString(),
+      employees: [], entries: [],
+    };
+    setData((d) => ({ ...d, businesses: [...d.businesses, biz] }));
+    setSession({ role: "admin", businessId: biz.id });
+  };
+
+  const deleteBusiness = (bizId) => {
+    setData((d) => ({ ...d, businesses: d.businesses.filter((b) => b.id !== bizId) }));
+  };
+
+  const logout = () => setSession(null);
+
+  let screen;
+  if (!session) {
+    screen = (
+      <Landing
+        businesses={data.businesses}
+        onAdminLogin={(businessId) => setSession({ role: "admin", businessId })}
+        onSignup={signup}
+        onEmployeeLogin={(businessId, employeeId) => setSession({ role: "employee", businessId, employeeId })}
+        onSuperLogin={() => setSession({ role: "super" })}
+      />
+    );
+  } else if (session.role === "super") {
+    screen = <SuperDashboard businesses={data.businesses} onDelete={deleteBusiness} onLogout={logout} />;
+  } else {
+    const biz = data.businesses.find((b) => b.id === session.businessId);
+    if (!biz) {
+      screen = null;
+      setTimeout(logout, 0);
+    } else if (session.role === "admin") {
+      screen = <AdminDashboard business={biz} onUpdate={updateBusiness} onLogout={logout} />;
+    } else {
+      const emp = biz.employees.find((x) => x.id === session.employeeId);
+      if (!emp) { screen = null; setTimeout(logout, 0); }
+      else screen = <EmployeeDashboard business={biz} employee={emp} onLogout={logout} />;
+    }
+  }
+
+  return <div className="shell">{screen}</div>;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
