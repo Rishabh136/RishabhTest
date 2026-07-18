@@ -2,116 +2,150 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --bg: #f4f2ee; --card: #ffffff; --border: #e5e1da; --input-border: #d6d1c8;
-    --text: #1f2328; --muted: #6b7280; --soft: #faf9f7;
-    --accent: #1f2328; --on-accent: #ffffff;
-    --danger: #b42318; --on-danger: #ffffff; --credit: #067647;
-    --error-bg: #fef2f2; --error-border: #fecaca; --error-text: #b42318;
-    --notice-bg: #fffbeb; --notice-border: #fde68a; --notice-text: #92400e;
-    --pill-bg: #eef2ff; --pill-text: #3730a3;
-    --link-muted: #9ca3af; --shadow: rgba(0,0,0,0.04);
+    --bg: #f6f2e8; --rule: rgba(30,42,58,0.06);
+    --card: #fbf9f2; --border: #e3dcc9; --input-border: #cfc6ae;
+    --text: #1e2a3a; --muted: #7a7466; --soft: #efe9da;
+    --accent: #1e2a3a; --on-accent: #fdfcf8;
+    --green: #3e7d54; --amber: #c8871e; --red: #a43c35; --on-color: #fdfcf8;
+    --tan: #f0e3c2; --seg: #e7e0cd;
+    --pill-bg: #e8e2d0; --pill-text: #5c563f;
+    --shadow: rgba(30,42,58,0.08);
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #16181b; --card: #1e2126; --border: #2e3238; --input-border: #3a3f46;
-      --text: #e9e7e2; --muted: #9aa1aa; --soft: #262a30;
-      --accent: #e9e7e2; --on-accent: #16181b;
-      --danger: #e5484d; --on-danger: #ffffff; --credit: #3dd68c;
-      --error-bg: #33201f; --error-border: #57302d; --error-text: #ff9f9a;
-      --notice-bg: #322a17; --notice-border: #574a22; --notice-text: #f0cf7c;
-      --pill-bg: #2b3050; --pill-text: #b8c0f5;
-      --link-muted: #6f7680; --shadow: rgba(0,0,0,0.3);
+      --bg: #1a1814; --rule: rgba(255,255,255,0.045);
+      --card: #232019; --border: #3a3527; --input-border: #4a4433;
+      --text: #ece7d8; --muted: #a49d8a; --soft: #2c2820;
+      --accent: #ece7d8; --on-accent: #1a1814;
+      --green: #5aa375; --amber: #d9a13f; --red: #c96157; --on-color: #1a1814;
+      --tan: #3d3722; --seg: #2c2820;
+      --pill-bg: #3a3527; --pill-text: #d5cdb4;
+      --shadow: rgba(0,0,0,0.4);
     }
   }
   :root[data-theme="dark"] {
-    --bg: #16181b; --card: #1e2126; --border: #2e3238; --input-border: #3a3f46;
-    --text: #e9e7e2; --muted: #9aa1aa; --soft: #262a30;
-    --accent: #e9e7e2; --on-accent: #16181b;
-    --danger: #e5484d; --on-danger: #ffffff; --credit: #3dd68c;
-    --error-bg: #33201f; --error-border: #57302d; --error-text: #ff9f9a;
-    --notice-bg: #322a17; --notice-border: #574a22; --notice-text: #f0cf7c;
-    --pill-bg: #2b3050; --pill-text: #b8c0f5;
-    --link-muted: #6f7680; --shadow: rgba(0,0,0,0.3);
+    --bg: #1a1814; --rule: rgba(255,255,255,0.045);
+    --card: #232019; --border: #3a3527; --input-border: #4a4433;
+    --text: #ece7d8; --muted: #a49d8a; --soft: #2c2820;
+    --accent: #ece7d8; --on-accent: #1a1814;
+    --green: #5aa375; --amber: #d9a13f; --red: #c96157; --on-color: #1a1814;
+    --tan: #3d3722; --seg: #2c2820;
+    --pill-bg: #3a3527; --pill-text: #d5cdb4;
+    --shadow: rgba(0,0,0,0.4);
   }
   :root[data-theme="light"] {
-    --bg: #f4f2ee; --card: #ffffff; --border: #e5e1da; --input-border: #d6d1c8;
-    --text: #1f2328; --muted: #6b7280; --soft: #faf9f7;
-    --accent: #1f2328; --on-accent: #ffffff;
-    --danger: #b42318; --on-danger: #ffffff; --credit: #067647;
-    --error-bg: #fef2f2; --error-border: #fecaca; --error-text: #b42318;
-    --notice-bg: #fffbeb; --notice-border: #fde68a; --notice-text: #92400e;
-    --pill-bg: #eef2ff; --pill-text: #3730a3;
-    --link-muted: #9ca3af; --shadow: rgba(0,0,0,0.04);
+    --bg: #f6f2e8; --rule: rgba(30,42,58,0.06);
+    --card: #fbf9f2; --border: #e3dcc9; --input-border: #cfc6ae;
+    --text: #1e2a3a; --muted: #7a7466; --soft: #efe9da;
+    --accent: #1e2a3a; --on-accent: #fdfcf8;
+    --green: #3e7d54; --amber: #c8871e; --red: #a43c35; --on-color: #fdfcf8;
+    --tan: #f0e3c2; --seg: #e7e0cd;
+    --pill-bg: #e8e2d0; --pill-text: #5c563f;
+    --shadow: rgba(30,42,58,0.08);
   }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background: var(--bg);
+    background-color: var(--bg);
+    background-image: repeating-linear-gradient(to bottom,
+      transparent 0, transparent 34px, var(--rule) 34px, var(--rule) 35px);
     color: var(--text);
     min-height: 100vh;
   }
-  .shell { max-width: 480px; margin: 0 auto; padding: 16px 16px 48px; }
-  .brand { text-align: center; padding: 28px 0 20px; }
-  .brand h1 { font-size: 26px; letter-spacing: -0.5px; }
-  .brand p { color: var(--muted); font-size: 14px; margin-top: 4px; }
+  .shell { max-width: 520px; margin: 0 auto; padding: 16px 16px 56px; }
+  .serif { font-family: Georgia, "Times New Roman", serif; font-weight: 400; }
+  .brand { text-align: center; padding: 34px 0 24px; }
+  .brand h1 { font-family: Georgia, "Times New Roman", serif; font-size: 32px; letter-spacing: -0.5px; }
+  .brand p { color: var(--muted); font-size: 14px; margin-top: 6px; }
   .card {
-    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
-    padding: 18px; margin-bottom: 14px; box-shadow: 0 1px 2px var(--shadow);
+    background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+    padding: 20px; margin-bottom: 14px; box-shadow: 0 1px 3px var(--shadow);
   }
-  .tabs { display: flex; gap: 6px; margin-bottom: 16px; }
-  .tabs button {
-    flex: 1; padding: 10px 6px; border: 1px solid var(--border); background: var(--soft);
-    border-radius: 10px; font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer;
+  .card-title { font-family: Georgia, serif; font-size: 24px; }
+  .seg { display: flex; background: var(--seg); border-radius: 12px; padding: 4px; gap: 4px; margin-bottom: 16px; }
+  .seg button {
+    flex: 1; padding: 11px 6px; border: none; background: transparent; border-radius: 9px;
+    font-size: 15px; font-weight: 600; color: var(--muted); cursor: pointer;
   }
-  .tabs button.active { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
-  label { display: block; font-size: 13px; font-weight: 600; margin: 12px 0 5px; color: var(--text); }
+  .seg button.active { background: var(--card); color: var(--text); box-shadow: 0 1px 2px var(--shadow); }
+  .seg.auth button.active { background: var(--accent); color: var(--on-accent); }
+  label { display: block; font-size: 14px; font-weight: 600; margin: 14px 0 6px; color: var(--text); }
   input, select {
-    width: 100%; padding: 11px 12px; border: 1px solid var(--input-border); border-radius: 10px;
-    font-size: 16px; background: var(--card);
+    width: 100%; padding: 12px 13px; border: 1.5px solid var(--input-border); border-radius: 12px;
+    font-size: 16px; background: var(--card); color: var(--text);
   }
   input:focus, select:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
   .btn {
-    width: 100%; padding: 13px; margin-top: 16px; border: none; border-radius: 10px;
-    background: var(--accent); color: var(--on-accent); font-size: 15px; font-weight: 700; cursor: pointer;
+    width: 100%; padding: 14px; margin-top: 18px; border: none; border-radius: 12px;
+    background: var(--accent); color: var(--on-accent); font-size: 16px; font-weight: 700; cursor: pointer;
   }
-  .btn.secondary { background: var(--card); color: var(--accent); border: 1px solid var(--input-border); }
-  .btn.danger { background: var(--danger); }
-  .btn.small { width: auto; padding: 8px 14px; font-size: 13px; margin-top: 0; }
-  .error {
-    background: var(--error-bg); border: 1px solid var(--error-border); color: var(--error-text);
-    padding: 10px 12px; border-radius: 10px; font-size: 13px; margin-top: 12px;
+  .btn.outline { background: var(--card); color: var(--text); border: 1.5px solid var(--input-border); }
+  .btn.small { width: auto; padding: 9px 16px; font-size: 14px; margin-top: 0; }
+  .btn.green { background: var(--green); color: var(--on-color); }
+  .btn.amber { background: var(--amber); color: var(--on-color); }
+  .btn.red { background: var(--red); color: var(--on-color); }
+  .btn.ghost { background: transparent; border: 1.5px solid var(--input-border); color: var(--text); }
+  .chip {
+    border: none; border-radius: 10px; padding: 10px 16px; font-size: 14px; font-weight: 700;
+    cursor: pointer; color: var(--on-color);
   }
-  .notice {
-    background: var(--notice-bg); border: 1px solid var(--notice-border); color: var(--notice-text);
-    padding: 10px 12px; border-radius: 10px; font-size: 13px; margin-top: 12px;
+  .chip.green { background: var(--green); }
+  .chip.amber { background: var(--amber); }
+  .chip.red { background: var(--red); }
+  .chip.dim { opacity: 0.35; }
+  .toast {
+    position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
+    z-index: 100; max-width: min(88vw, 420px);
+    background: var(--accent); color: var(--on-accent);
+    padding: 13px 18px; border-radius: 12px; font-size: 15px; font-weight: 600;
+    box-shadow: 0 4px 14px var(--shadow); text-align: center;
   }
+  .toast.error { background: var(--red); color: var(--on-color); }
   .biz-option {
-    display: block; width: 100%; text-align: left; padding: 11px 12px; margin-top: 8px;
-    border: 1px solid var(--input-border); border-radius: 10px; background: var(--card); cursor: pointer; font-size: 15px;
+    display: block; width: 100%; text-align: left; padding: 12px 14px; margin-top: 8px;
+    border: 1.5px solid var(--border); border-radius: 12px; background: var(--tan);
+    cursor: pointer; font-size: 16px; color: var(--text);
   }
   .biz-option.selected { border-color: var(--accent); outline: 2px solid var(--accent); outline-offset: -1px; }
-  .biz-option .meta { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
-  .owner-link {
-    display: block; margin: 24px auto 0; background: none; border: none;
-    color: var(--link-muted); font-size: 12px; text-decoration: underline; cursor: pointer;
-  }
-  .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-  .topbar h2 { font-size: 19px; }
-  .topbar .sub { font-size: 12px; color: var(--muted); }
+  .biz-option .meta { display: block; font-size: 12.5px; color: var(--muted); margin-top: 3px; }
+  .back-link { background: none; border: none; color: var(--muted); font-size: 16px; cursor: pointer; padding: 8px 0; }
+  .topbar { display: flex; justify-content: space-between; align-items: flex-start; margin: 4px 0 16px; }
+  .eyebrow { font-size: 13px; font-weight: 700; letter-spacing: 0.12em; color: var(--muted); text-transform: uppercase; }
+  .topbar h2 { font-family: Georgia, serif; font-size: 22px; margin-top: 3px; }
   .row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-  .list-item { padding: 12px 0; border-bottom: 1px solid var(--border); }
-  .list-item:last-child { border-bottom: none; }
-  .muted { color: var(--muted); font-size: 13px; }
-  .amount-credit { color: var(--credit); font-weight: 700; }
-  .amount-debit { color: var(--danger); font-weight: 700; }
-  .balance-box { text-align: center; padding: 14px; background: var(--soft); border-radius: 10px; margin-bottom: 4px; }
-  .balance-box .big { font-size: 24px; font-weight: 800; }
+  .emp-box {
+    border: 1.5px dashed var(--input-border); border-radius: 12px; padding: 14px; margin-top: 12px;
+  }
+  .emp-box .actions { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+  .muted { color: var(--muted); font-size: 14px; }
   .pill {
-    font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 999px;
+    font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 999px;
     background: var(--pill-bg); color: var(--pill-text);
   }
-  .link-btn { background: none; border: none; color: var(--accent); font-weight: 700; font-size: 13px; cursor: pointer; text-decoration: underline; }
-  .section-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
-  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .status { font-size: 15px; font-weight: 600; }
+  .status.P { color: var(--green); }
+  .status.H { color: var(--amber); }
+  .status.L { color: var(--red); }
+  .pay-box { background: var(--soft); border-radius: 12px; padding: 16px; margin-top: 12px; }
+  .pay-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; margin-top: 10px; font-size: 15px; }
+  .pay-grid .num { font-variant-numeric: tabular-nums; }
+  .pay-net { font-weight: 800; }
+  .big-amount { font-family: Georgia, serif; font-size: 26px; font-weight: 700; }
+  .owner-link {
+    display: block; margin: 26px auto 0; background: none; border: none;
+    color: var(--muted); font-size: 13px; text-decoration: underline; cursor: pointer;
+  }
+  .home-btn {
+    display: block; width: 100%; padding: 20px; margin-top: 14px; text-align: left;
+    background: var(--card); border: 1.5px solid var(--border); border-radius: 16px; cursor: pointer;
+    box-shadow: 0 1px 3px var(--shadow); color: var(--text);
+  }
+  .home-btn .t { font-family: Georgia, serif; font-size: 20px; }
+  .home-btn .d { font-size: 14px; color: var(--muted); margin-top: 4px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .mini-form { margin-top: 12px; padding: 12px; background: var(--soft); border-radius: 12px; }
+  .mini-form .actions { display: flex; gap: 10px; margin-top: 10px; }
+  .list-item { padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .list-item:last-child { border-bottom: none; }
 </style>
 <div id="root"></div>
 <script>/**
@@ -416,15 +450,17 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
 </script>
 <script>const {
   useState,
-  useEffect
+  useEffect,
+  useRef
 } = React;
 
 // NOTE: this app is fully client-side. The master key and all PINs are visible
 // to anyone who inspects the page or localStorage — fine for personal use,
 // not a real security boundary.
 const SUPER_ADMIN_KEY = "kapraghar-owner-2026";
-const STORAGE_KEY = "staff_ledger_data_v1";
+const STORAGE_KEY = "staff_ledger_data_v2";
 const uid = () => window.crypto && crypto.randomUUID ? crypto.randomUUID() : Date.now() + "-" + Math.random().toString(36).slice(2);
+const genPin = () => String(Math.floor(1000 + Math.random() * 9000));
 function loadData() {
   try {
     const d = JSON.parse(localStorage.getItem(STORAGE_KEY));
@@ -439,9 +475,92 @@ const fmtDate = iso => new Date(iso).toLocaleDateString("en-IN", {
   month: "short",
   year: "numeric"
 });
-const fmtMoney = n => "₹" + Number(n || 0).toLocaleString("en-IN");
+const fmtLongDate = d => d.toLocaleDateString("en-IN", {
+  day: "numeric",
+  month: "long",
+  year: "numeric"
+});
+const fmtMoney = n => "₹" + Math.round(Number(n || 0)).toLocaleString("en-IN");
+const todayKey = () => {
+  const d = new Date();
+  return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+};
+const monthKeyOf = dateStr => dateStr.slice(0, 7);
+const fmtMonth = mk => {
+  const [y, m] = mk.split("-").map(Number);
+  return new Date(y, m - 1, 1).toLocaleDateString("en-IN", {
+    month: "long",
+    year: "numeric"
+  });
+};
+const daysInMonth = mk => {
+  const [y, m] = mk.split("-").map(Number);
+  return new Date(y, m, 0).getDate();
+};
+function monthsSince(startIso) {
+  const out = [];
+  const start = new Date(startIso);
+  const now = new Date();
+  let y = start.getFullYear(),
+    m = start.getMonth();
+  while (y < now.getFullYear() || y === now.getFullYear() && m <= now.getMonth()) {
+    out.push(y + "-" + String(m + 1).padStart(2, "0"));
+    m++;
+    if (m > 11) {
+      m = 0;
+      y++;
+    }
+  }
+  return out.reverse();
+}
 const isPin = s => /^\d{4}$/.test(s);
 const isPhone = s => /^\d{10}$/.test(s);
+
+// Payroll for one employee in one month, from attendance + advances
+function payrollFor(biz, emp, mk) {
+  let present = 0,
+    half = 0,
+    leave = 0;
+  for (const [date, marks] of Object.entries(biz.attendance || {})) {
+    if (monthKeyOf(date) !== mk) continue;
+    const v = marks[emp.id];
+    if (v === "P") present++;else if (v === "H") half++;else if (v === "L") leave++;
+  }
+  const perDay = (emp.salary || 0) / daysInMonth(mk);
+  const gross = Math.round(perDay * (present + 0.5 * half));
+  const advances = (biz.advances || []).filter(a => a.employeeId === emp.id && monthKeyOf(a.date.slice(0, 10)) === mk).reduce((s, a) => s + a.amount, 0);
+  return {
+    present,
+    half,
+    leave,
+    gross,
+    advances,
+    net: gross - advances
+  };
+}
+function ConfirmButton({
+  label,
+  confirmLabel,
+  className,
+  onConfirm
+}) {
+  const [armed, setArmed] = useState(false);
+  useEffect(() => {
+    if (!armed) return;
+    const t = setTimeout(() => setArmed(false), 3000);
+    return () => clearTimeout(t);
+  }, [armed]);
+  return /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    className: className,
+    onClick: () => {
+      if (armed) {
+        setArmed(false);
+        onConfirm();
+      } else setArmed(true);
+    }
+  }, armed ? confirmLabel : label);
+}
 function BizPicker({
   businesses,
   search,
@@ -459,7 +578,10 @@ function BizPicker({
       onSelect(null);
     }
   }), search.trim() !== "" && matches.length === 0 && /*#__PURE__*/React.createElement("div", {
-    className: "notice"
+    className: "muted",
+    style: {
+      marginTop: 8
+    }
   }, "No business found with that name."), matches.map(b => /*#__PURE__*/React.createElement("button", {
     key: b.id,
     type: "button",
@@ -471,20 +593,19 @@ function BizPicker({
 }
 function Landing({
   businesses,
+  showToast,
   onAdminLogin,
   onSignup,
   onEmployeeLogin,
   onSuperLogin
 }) {
-  const [tab, setTab] = useState("admin-login");
+  const [mode, setMode] = useState("home"); // home | admin | employee | super
+  const [authTab, setAuthTab] = useState("login"); // login | signup
 
-  // Every tab keeps its own PIN state so digits can never carry over
-  // between login and signup (the original wrong-PIN bug).
   const [loginSearch, setLoginSearch] = useState("");
   const [loginBizId, setLoginBizId] = useState(null);
   const [loginPin, setLoginPin] = useState("");
   const [signupName, setSignupName] = useState("");
-  const [signupOwner, setSignupOwner] = useState("");
   const [signupPin, setSignupPin] = useState("");
   const [signupConfirm, setSignupConfirm] = useState("");
   const [dupWarned, setDupWarned] = useState(false);
@@ -493,10 +614,10 @@ function Landing({
   const [empPhone, setEmpPhone] = useState("");
   const [empPin, setEmpPin] = useState("");
   const [superKey, setSuperKey] = useState("");
-  const [error, setError] = useState("");
-  const switchTab = t => {
-    setTab(t);
-    setError("");
+
+  // Every form keeps its own PIN state; clear them all whenever the
+  // screen or tab changes so digits never carry over between forms.
+  const resetPins = () => {
     setLoginPin("");
     setSignupPin("");
     setSignupConfirm("");
@@ -504,16 +625,24 @@ function Landing({
     setSuperKey("");
     setDupWarned(false);
   };
+  const go = m => {
+    setMode(m);
+    setAuthTab("login");
+    resetPins();
+  };
+  const switchAuthTab = t => {
+    setAuthTab(t);
+    resetPins();
+  };
   const submitAdminLogin = e => {
     e.preventDefault();
-    setError("");
     const biz = businesses.find(b => b.id === loginBizId);
     if (!biz) {
-      setError("Select your business from the list first.");
+      showToast("Select your business from the list first", "error");
       return;
     }
     if (biz.pin !== loginPin) {
-      setError("Wrong PIN for this business. If you have two businesses with the same name, check the creation date and try the other one.");
+      showToast("Wrong PIN or business", "error");
       setLoginPin("");
       return;
     }
@@ -521,18 +650,17 @@ function Landing({
   };
   const submitSignup = e => {
     e.preventDefault();
-    setError("");
     const name = signupName.trim();
     if (!name) {
-      setError("Enter a business name.");
+      showToast("Enter a business name", "error");
       return;
     }
     if (!isPin(signupPin)) {
-      setError("PIN must be exactly 4 digits.");
+      showToast("PIN must be exactly 4 digits", "error");
       return;
     }
     if (signupPin !== signupConfirm) {
-      setError("PINs do not match. Re-enter both.");
+      showToast("PINs do not match — re-enter both", "error");
       setSignupPin("");
       setSignupConfirm("");
       return;
@@ -540,31 +668,24 @@ function Landing({
     const dup = businesses.find(b => b.name.trim().toLowerCase() === name.toLowerCase());
     if (dup && !dupWarned) {
       setDupWarned(true);
-      setError('A business named "' + dup.name + '" already exists (created ' + fmtDate(dup.createdAt) + "). If that is yours, log in instead. Tap Create again to make a second one anyway.");
+      showToast('"' + dup.name + '" already exists (created ' + fmtDate(dup.createdAt) + '). Tap Create again to make a second one.', "error");
       return;
     }
     onSignup({
       name,
-      ownerName: signupOwner.trim(),
       pin: signupPin
     });
   };
   const submitEmployeeLogin = e => {
     e.preventDefault();
-    setError("");
     const biz = businesses.find(b => b.id === empBizId);
     if (!biz) {
-      setError("Select your business from the list first.");
+      showToast("Select your business from the list first", "error");
       return;
     }
-    const emp = biz.employees.find(x => x.phone === empPhone.trim());
+    const emp = biz.employees.find(x => x.phone === empPhone.trim() && x.pin === empPin);
     if (!emp) {
-      setError("No employee with this phone number in the selected business. If two businesses share a name, check the creation date — your account may be under the other one.");
-      setEmpPin("");
-      return;
-    }
-    if (emp.pin !== empPin) {
-      setError("Wrong PIN. Try again.");
+      showToast("No match — check phone/PIN with your admin", "error");
       setEmpPin("");
       return;
     }
@@ -576,25 +697,45 @@ function Landing({
       onSuperLogin();
       return;
     }
-    setError("Wrong master key.");
+    showToast("Wrong master key", "error");
     setSuperKey("");
   };
-  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-    className: "brand"
-  }, /*#__PURE__*/React.createElement("h1", null, "Staff Ledger"), /*#__PURE__*/React.createElement("p", null, "PIN-based staff & payment register for your shop")), tab !== "super" && /*#__PURE__*/React.createElement("div", {
-    className: "tabs"
-  }, /*#__PURE__*/React.createElement("button", {
-    className: tab === "admin-login" ? "active" : "",
-    onClick: () => switchTab("admin-login")
-  }, "Admin login"), /*#__PURE__*/React.createElement("button", {
-    className: tab === "signup" ? "active" : "",
-    onClick: () => switchTab("signup")
-  }, "New business"), /*#__PURE__*/React.createElement("button", {
-    className: tab === "employee" ? "active" : "",
-    onClick: () => switchTab("employee")
-  }, "Employee login")), /*#__PURE__*/React.createElement("div", {
+  if (mode === "home") {
+    return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+      className: "brand"
+    }, /*#__PURE__*/React.createElement("h1", null, "Staff Ledger"), /*#__PURE__*/React.createElement("p", null, "Attendance, advances & payroll for your shop")), /*#__PURE__*/React.createElement("button", {
+      className: "home-btn",
+      onClick: () => go("admin")
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "t"
+    }, "Business owner"), /*#__PURE__*/React.createElement("div", {
+      className: "d"
+    }, "Manage attendance, staff and payroll")), /*#__PURE__*/React.createElement("button", {
+      className: "home-btn",
+      onClick: () => go("employee")
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "t"
+    }, "Employee"), /*#__PURE__*/React.createElement("div", {
+      className: "d"
+    }, "See your attendance and salary")), /*#__PURE__*/React.createElement("button", {
+      className: "owner-link",
+      onClick: () => go("super")
+    }, "Platform owner login"));
+  }
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("button", {
+    className: "back-link",
+    onClick: () => go("home")
+  }, "\u2190 back"), mode === "admin" && /*#__PURE__*/React.createElement("div", {
     className: "card"
-  }, tab === "admin-login" && /*#__PURE__*/React.createElement("form", {
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "seg auth"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: authTab === "login" ? "active" : "",
+    onClick: () => switchAuthTab("login")
+  }, "Login"), /*#__PURE__*/React.createElement("button", {
+    className: authTab === "signup" ? "active" : "",
+    onClick: () => switchAuthTab("signup")
+  }, "New business")), authTab === "login" && /*#__PURE__*/React.createElement("form", {
     onSubmit: submitAdminLogin
   }, /*#__PURE__*/React.createElement(BizPicker, {
     businesses: businesses,
@@ -603,18 +744,16 @@ function Landing({
     selectedId: loginBizId,
     onSelect: setLoginBizId,
     label: "Find your business"
-  }), /*#__PURE__*/React.createElement("label", null, "Admin PIN (4 digits)"), /*#__PURE__*/React.createElement("input", {
+  }), /*#__PURE__*/React.createElement("label", null, "PIN"), /*#__PURE__*/React.createElement("input", {
     type: "password",
     inputMode: "numeric",
     maxLength: "4",
     value: loginPin,
     onChange: e => setLoginPin(e.target.value.replace(/\D/g, ""))
-  }), error && /*#__PURE__*/React.createElement("div", {
-    className: "error"
-  }, error), /*#__PURE__*/React.createElement("button", {
+  }), /*#__PURE__*/React.createElement("button", {
     className: "btn",
     type: "submit"
-  }, "Log in")), tab === "signup" && /*#__PURE__*/React.createElement("form", {
+  }, "Login")), authTab === "signup" && /*#__PURE__*/React.createElement("form", {
     onSubmit: submitSignup
   }, /*#__PURE__*/React.createElement("label", null, "Business name"), /*#__PURE__*/React.createElement("input", {
     value: signupName,
@@ -623,9 +762,6 @@ function Landing({
       setSignupName(e.target.value);
       setDupWarned(false);
     }
-  }), /*#__PURE__*/React.createElement("label", null, "Owner name (optional)"), /*#__PURE__*/React.createElement("input", {
-    value: signupOwner,
-    onChange: e => setSignupOwner(e.target.value)
   }), /*#__PURE__*/React.createElement("div", {
     className: "grid2"
   }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", null, "Choose a 4-digit PIN"), /*#__PURE__*/React.createElement("input", {
@@ -640,12 +776,12 @@ function Landing({
     maxLength: "4",
     value: signupConfirm,
     onChange: e => setSignupConfirm(e.target.value.replace(/\D/g, ""))
-  }))), error && /*#__PURE__*/React.createElement("div", {
-    className: dupWarned ? "notice" : "error"
-  }, error), /*#__PURE__*/React.createElement("button", {
+  }))), /*#__PURE__*/React.createElement("button", {
     className: "btn",
     type: "submit"
-  }, "Create business")), tab === "employee" && /*#__PURE__*/React.createElement("form", {
+  }, "Create business"))), mode === "employee" && /*#__PURE__*/React.createElement("div", {
+    className: "card"
+  }, /*#__PURE__*/React.createElement("form", {
     onSubmit: submitEmployeeLogin
   }, /*#__PURE__*/React.createElement(BizPicker, {
     businesses: businesses,
@@ -653,321 +789,447 @@ function Landing({
     onSearch: setEmpSearch,
     selectedId: empBizId,
     onSelect: setEmpBizId,
-    label: "Find your business"
-  }), /*#__PURE__*/React.createElement("label", null, "Your phone number"), /*#__PURE__*/React.createElement("input", {
+    label: "Your business"
+  }), /*#__PURE__*/React.createElement("label", null, "Phone"), /*#__PURE__*/React.createElement("input", {
     inputMode: "numeric",
     maxLength: "10",
     value: empPhone,
     onChange: e => setEmpPhone(e.target.value.replace(/\D/g, ""))
-  }), /*#__PURE__*/React.createElement("label", null, "Your PIN (4 digits)"), /*#__PURE__*/React.createElement("input", {
+  }), /*#__PURE__*/React.createElement("label", null, "PIN"), /*#__PURE__*/React.createElement("input", {
     type: "password",
     inputMode: "numeric",
     maxLength: "4",
     value: empPin,
     onChange: e => setEmpPin(e.target.value.replace(/\D/g, ""))
-  }), error && /*#__PURE__*/React.createElement("div", {
-    className: "error"
-  }, error), /*#__PURE__*/React.createElement("button", {
+  }), /*#__PURE__*/React.createElement("button", {
     className: "btn",
     type: "submit"
-  }, "Log in")), tab === "super" && /*#__PURE__*/React.createElement("form", {
-    onSubmit: submitSuper
+  }, "Login"))), mode === "super" && /*#__PURE__*/React.createElement("div", {
+    className: "card"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "section-title"
-  }, "Platform owner login"), /*#__PURE__*/React.createElement("label", null, "Master key"), /*#__PURE__*/React.createElement("input", {
+    className: "card-title",
+    style: {
+      marginBottom: 4
+    }
+  }, "Platform owner"), /*#__PURE__*/React.createElement("form", {
+    onSubmit: submitSuper
+  }, /*#__PURE__*/React.createElement("label", null, "Master key"), /*#__PURE__*/React.createElement("input", {
     type: "password",
     value: superKey,
     onChange: e => setSuperKey(e.target.value)
-  }), error && /*#__PURE__*/React.createElement("div", {
-    className: "error"
-  }, error), /*#__PURE__*/React.createElement("button", {
+  }), /*#__PURE__*/React.createElement("button", {
     className: "btn",
     type: "submit"
-  }, "Enter"), /*#__PURE__*/React.createElement("button", {
-    className: "btn secondary",
-    type: "button",
-    onClick: () => switchTab("admin-login")
-  }, "Back"))), tab !== "super" && /*#__PURE__*/React.createElement("button", {
-    className: "owner-link",
-    onClick: () => switchTab("super")
-  }, "Platform owner login"));
+  }, "Enter"))));
 }
-function EmployeeForm({
+function AddEmployeeForm({
   business,
   onAdd,
-  onCancel
+  onCancel,
+  showToast
 }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [pin, setPin] = useState("");
-  const [error, setError] = useState("");
+  const [salary, setSalary] = useState("");
   const submit = e => {
     e.preventDefault();
-    setError("");
     if (!name.trim()) {
-      setError("Enter the employee's name.");
+      showToast("Enter the employee's name", "error");
       return;
     }
     if (!isPhone(phone)) {
-      setError("Phone number must be exactly 10 digits.");
+      showToast("Phone number must be exactly 10 digits", "error");
       return;
     }
     if (business.employees.some(x => x.phone === phone)) {
-      setError("An employee with this phone number already exists in this business.");
+      showToast("An employee with this phone already exists here", "error");
       return;
     }
-    if (!isPin(pin)) {
-      setError("PIN must be exactly 4 digits.");
+    const sal = Number(salary);
+    if (!sal || sal <= 0) {
+      showToast("Enter a monthly salary above 0", "error");
       return;
     }
     onAdd({
       name: name.trim(),
       phone,
-      pin
+      salary: sal
     });
   };
   return /*#__PURE__*/React.createElement("form", {
     onSubmit: submit
-  }, /*#__PURE__*/React.createElement("label", null, "Employee name"), /*#__PURE__*/React.createElement("input", {
+  }, /*#__PURE__*/React.createElement("label", null, "Name"), /*#__PURE__*/React.createElement("input", {
     value: name,
     onChange: e => setName(e.target.value)
-  }), /*#__PURE__*/React.createElement("label", null, "Phone number (used to log in)"), /*#__PURE__*/React.createElement("input", {
+  }), /*#__PURE__*/React.createElement("label", null, "Phone (used to log in)"), /*#__PURE__*/React.createElement("input", {
     inputMode: "numeric",
     maxLength: "10",
     value: phone,
     onChange: e => setPhone(e.target.value.replace(/\D/g, ""))
-  }), /*#__PURE__*/React.createElement("label", null, "Employee PIN (4 digits)"), /*#__PURE__*/React.createElement("input", {
+  }), /*#__PURE__*/React.createElement("label", null, "Monthly salary (\u20B9)"), /*#__PURE__*/React.createElement("input", {
     inputMode: "numeric",
-    maxLength: "4",
-    value: pin,
-    onChange: e => setPin(e.target.value.replace(/\D/g, ""))
-  }), error && /*#__PURE__*/React.createElement("div", {
-    className: "error"
-  }, error), /*#__PURE__*/React.createElement("button", {
-    className: "btn",
+    value: salary,
+    onChange: e => setSalary(e.target.value.replace(/\D/g, ""))
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "muted",
+    style: {
+      marginTop: 12
+    }
+  }, "A 4-digit PIN will be generated automatically \u2014 share it with the employee so they can log in."), /*#__PURE__*/React.createElement("button", {
+    className: "btn green",
     type: "submit"
   }, "Add employee"), /*#__PURE__*/React.createElement("button", {
-    className: "btn secondary",
+    className: "btn ghost",
     type: "button",
     onClick: onCancel
   }, "Cancel"));
 }
-function Ledger({
-  business,
-  employee,
-  readOnly,
-  onAddEntry,
-  onDeleteEntry
-}) {
-  const [type, setType] = useState("debit");
-  const [amount, setAmount] = useState("");
-  const [note, setNote] = useState("");
-  const [error, setError] = useState("");
-  const entries = business.entries.filter(en => en.employeeId === employee.id).sort((a, b) => new Date(b.date) - new Date(a.date));
-  const balance = entries.reduce((sum, en) => sum + (en.type === "credit" ? en.amount : -en.amount), 0);
-  const submit = e => {
-    e.preventDefault();
-    setError("");
-    const amt = Number(amount);
-    if (!amt || amt <= 0) {
-      setError("Enter an amount greater than 0.");
-      return;
-    }
-    onAddEntry({
-      employeeId: employee.id,
-      type,
-      amount: amt,
-      note: note.trim()
-    });
-    setAmount("");
-    setNote("");
-  };
-  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-    className: "balance-box"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "muted"
-  }, "Balance due to ", employee.name), /*#__PURE__*/React.createElement("div", {
-    className: "big " + (balance >= 0 ? "amount-credit" : "amount-debit")
-  }, fmtMoney(Math.abs(balance)), balance < 0 ? " (advance taken)" : "")), !readOnly && /*#__PURE__*/React.createElement("form", {
-    onSubmit: submit,
-    style: {
-      marginBottom: 8
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "grid2"
-  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", null, "Entry type"), /*#__PURE__*/React.createElement("select", {
-    value: type,
-    onChange: e => setType(e.target.value)
-  }, /*#__PURE__*/React.createElement("option", {
-    value: "credit"
-  }, "Salary / bonus (owed to staff)"), /*#__PURE__*/React.createElement("option", {
-    value: "debit"
-  }, "Advance / payment given"))), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", null, "Amount (\u20B9)"), /*#__PURE__*/React.createElement("input", {
-    inputMode: "numeric",
-    value: amount,
-    onChange: e => setAmount(e.target.value.replace(/[^\d]/g, ""))
-  }))), /*#__PURE__*/React.createElement("label", null, "Note (optional)"), /*#__PURE__*/React.createElement("input", {
-    value: note,
-    placeholder: "e.g. Diwali advance",
-    onChange: e => setNote(e.target.value)
-  }), error && /*#__PURE__*/React.createElement("div", {
-    className: "error"
-  }, error), /*#__PURE__*/React.createElement("button", {
-    className: "btn",
-    type: "submit"
-  }, "Add entry")), /*#__PURE__*/React.createElement("div", {
-    className: "section-title",
-    style: {
-      marginTop: 14
-    }
-  }, "Entries"), entries.length === 0 && /*#__PURE__*/React.createElement("div", {
-    className: "muted"
-  }, "No entries yet."), entries.map(en => /*#__PURE__*/React.createElement("div", {
-    key: en.id,
-    className: "list-item row"
-  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-    className: en.type === "credit" ? "amount-credit" : "amount-debit"
-  }, en.type === "credit" ? "+" : "−", fmtMoney(en.amount)), /*#__PURE__*/React.createElement("div", {
-    className: "muted"
-  }, fmtDate(en.date), en.note ? " · " + en.note : "")), !readOnly && /*#__PURE__*/React.createElement("button", {
-    className: "btn danger small",
-    onClick: () => {
-      if (window.confirm("Delete this entry?")) onDeleteEntry(en.id);
-    }
-  }, "Delete"))));
-}
 function AdminDashboard({
   business,
   onUpdate,
-  onLogout
+  onLogout,
+  showToast
 }) {
-  const [view, setView] = useState("list"); // list | add | ledger
-  const [activeEmpId, setActiveEmpId] = useState(null);
-  const activeEmp = business.employees.find(x => x.id === activeEmpId);
-  const addEmployee = emp => {
+  const [tab, setTab] = useState("today"); // today | emps | payroll
+  const [adding, setAdding] = useState(false);
+  const [advanceFor, setAdvanceFor] = useState(null);
+  const [advanceAmt, setAdvanceAmt] = useState("");
+  const [month, setMonth] = useState(monthKeyOf(todayKey()));
+  const tKey = todayKey();
+  const attToday = (business.attendance || {})[tKey] || {};
+  const mark = (empId, v) => {
+    const attendance = {
+      ...(business.attendance || {})
+    };
+    attendance[tKey] = {
+      ...(attendance[tKey] || {}),
+      [empId]: v
+    };
+    onUpdate({
+      ...business,
+      attendance
+    });
+  };
+  const addEmployee = ({
+    name,
+    phone,
+    salary
+  }) => {
+    const pin = genPin();
     onUpdate({
       ...business,
       employees: [...business.employees, {
-        ...emp,
         id: uid(),
+        name,
+        phone,
+        salary,
+        pin,
         createdAt: new Date().toISOString()
       }]
     });
-    setView("list");
+    setAdding(false);
+    setTab("emps");
+    showToast(name + " added — share PIN " + pin + " with them");
   };
-  const removeEmployee = empId => {
-    if (!window.confirm("Remove this employee and all their ledger entries?")) return;
+  const removeEmployee = emp => {
+    const attendance = {};
+    for (const [date, marks] of Object.entries(business.attendance || {})) {
+      const rest = {
+        ...marks
+      };
+      delete rest[emp.id];
+      if (Object.keys(rest).length) attendance[date] = rest;
+    }
     onUpdate({
       ...business,
-      employees: business.employees.filter(x => x.id !== empId),
-      entries: business.entries.filter(x => x.employeeId !== empId)
+      employees: business.employees.filter(x => x.id !== emp.id),
+      attendance,
+      advances: (business.advances || []).filter(a => a.employeeId !== emp.id)
     });
-    setView("list");
-    setActiveEmpId(null);
+    showToast(emp.name + " removed");
   };
-  const addEntry = entry => {
+  const saveAdvance = emp => {
+    const amt = Number(advanceAmt);
+    if (!amt || amt <= 0) {
+      showToast("Enter an advance amount above 0", "error");
+      return;
+    }
     onUpdate({
       ...business,
-      entries: [...business.entries, {
-        ...entry,
+      advances: [...(business.advances || []), {
         id: uid(),
+        employeeId: emp.id,
+        amount: amt,
         date: new Date().toISOString()
       }]
     });
+    setAdvanceFor(null);
+    setAdvanceAmt("");
+    showToast("Advance of " + fmtMoney(amt) + " recorded for " + emp.name);
   };
-  const deleteEntry = entryId => {
-    onUpdate({
-      ...business,
-      entries: business.entries.filter(x => x.id !== entryId)
-    });
+  const statusLabel = {
+    P: "Present",
+    H: "Half-day",
+    L: "Leave"
   };
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     className: "topbar"
-  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h2", null, business.name), /*#__PURE__*/React.createElement("div", {
-    className: "sub"
-  }, "Admin \xB7 created ", fmtDate(business.createdAt))), /*#__PURE__*/React.createElement("button", {
-    className: "btn secondary small",
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "eyebrow"
+  }, "Admin"), /*#__PURE__*/React.createElement("h2", null, business.name)), /*#__PURE__*/React.createElement("button", {
+    className: "btn outline small",
     onClick: onLogout
-  }, "Log out")), view === "list" && /*#__PURE__*/React.createElement("div", {
+  }, "Log out")), /*#__PURE__*/React.createElement("div", {
+    className: "seg"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: tab === "today" ? "active" : "",
+    onClick: () => setTab("today")
+  }, "Today"), /*#__PURE__*/React.createElement("button", {
+    className: tab === "emps" ? "active" : "",
+    onClick: () => {
+      setTab("emps");
+      setAdding(false);
+    }
+  }, "Employees"), /*#__PURE__*/React.createElement("button", {
+    className: tab === "payroll" ? "active" : "",
+    onClick: () => setTab("payroll")
+  }, "Payroll")), tab === "today" && /*#__PURE__*/React.createElement("div", {
     className: "card"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "row",
+    className: "card-title"
+  }, "Attendance \u2014 ", fmtLongDate(new Date())), business.employees.length === 0 && /*#__PURE__*/React.createElement("div", {
+    className: "muted",
     style: {
-      marginBottom: 8
+      marginTop: 12
     }
+  }, "No employees yet \u2014 add them in the Employees tab."), business.employees.map(emp => {
+    const v = attToday[emp.id];
+    return /*#__PURE__*/React.createElement("div", {
+      key: emp.id,
+      className: "emp-box"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "row"
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontWeight: 700,
+        fontSize: 17
+      }
+    }, emp.name), /*#__PURE__*/React.createElement("div", {
+      className: "status " + (v || "")
+    }, v ? statusLabel[v] : "Not marked")), /*#__PURE__*/React.createElement("div", {
+      className: "actions",
+      style: {
+        display: "flex",
+        gap: 10,
+        marginTop: 12
+      }
+    }, /*#__PURE__*/React.createElement("button", {
+      className: "chip green" + (v && v !== "P" ? " dim" : ""),
+      onClick: () => mark(emp.id, "P")
+    }, "Present"), /*#__PURE__*/React.createElement("button", {
+      className: "chip amber" + (v && v !== "H" ? " dim" : ""),
+      onClick: () => mark(emp.id, "H")
+    }, "Half-day"), /*#__PURE__*/React.createElement("button", {
+      className: "chip red" + (v && v !== "L" ? " dim" : ""),
+      onClick: () => mark(emp.id, "L")
+    }, "Leave")));
+  })), tab === "emps" && /*#__PURE__*/React.createElement("div", {
+    className: "card"
+  }, adding ? /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "card-title"
+  }, "Add employee"), /*#__PURE__*/React.createElement(AddEmployeeForm, {
+    business: business,
+    onAdd: addEmployee,
+    onCancel: () => setAdding(false),
+    showToast: showToast
+  })) : /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "row"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "section-title"
+    className: "card-title"
   }, "Employees (", business.employees.length, ")"), /*#__PURE__*/React.createElement("button", {
-    className: "btn small",
-    onClick: () => setView("add")
+    className: "btn green small",
+    onClick: () => setAdding(true)
   }, "+ Add")), business.employees.length === 0 && /*#__PURE__*/React.createElement("div", {
-    className: "muted"
-  }, "No employees yet. Add your first employee to start the ledger."), business.employees.map(emp => /*#__PURE__*/React.createElement("div", {
-    key: emp.id,
-    className: "list-item row"
-  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "muted",
     style: {
-      fontWeight: 600
+      marginTop: 12
+    }
+  }, "No employees yet. Tap + Add to create the first one."), business.employees.map(emp => /*#__PURE__*/React.createElement("div", {
+    key: emp.id,
+    className: "emp-box"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "row"
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontWeight: 700,
+      fontSize: 17
     }
   }, emp.name), /*#__PURE__*/React.createElement("div", {
     className: "muted"
-  }, emp.phone)), /*#__PURE__*/React.createElement("button", {
-    className: "link-btn",
-    onClick: () => {
-      setActiveEmpId(emp.id);
-      setView("ledger");
-    }
-  }, "Open ledger")))), view === "add" && /*#__PURE__*/React.createElement("div", {
-    className: "card"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "section-title"
-  }, "Add employee"), /*#__PURE__*/React.createElement(EmployeeForm, {
-    business: business,
-    onAdd: addEmployee,
-    onCancel: () => setView("list")
-  })), view === "ledger" && activeEmp && /*#__PURE__*/React.createElement("div", {
-    className: "card"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "row",
+  }, fmtMoney(emp.salary), "/mo \xB7 PIN ", emp.pin)), /*#__PURE__*/React.createElement("div", {
+    className: "muted",
     style: {
-      marginBottom: 10
+      marginTop: 4
     }
-  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-    className: "section-title"
-  }, activeEmp.name), /*#__PURE__*/React.createElement("div", {
-    className: "muted"
-  }, activeEmp.phone)), /*#__PURE__*/React.createElement("button", {
-    className: "link-btn",
-    onClick: () => setView("list")
-  }, "\u2190 Back")), /*#__PURE__*/React.createElement(Ledger, {
-    business: business,
-    employee: activeEmp,
-    onAddEntry: addEntry,
-    onDeleteEntry: deleteEntry
-  }), /*#__PURE__*/React.createElement("button", {
-    className: "btn danger",
-    onClick: () => removeEmployee(activeEmp.id)
-  }, "Remove employee")));
+  }, emp.phone), advanceFor === emp.id ? /*#__PURE__*/React.createElement("div", {
+    className: "mini-form"
+  }, /*#__PURE__*/React.createElement("label", {
+    style: {
+      marginTop: 0
+    }
+  }, "Advance amount (\u20B9)"), /*#__PURE__*/React.createElement("input", {
+    inputMode: "numeric",
+    value: advanceAmt,
+    autoFocus: true,
+    onChange: e => setAdvanceAmt(e.target.value.replace(/\D/g, ""))
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "actions"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "chip amber",
+    onClick: () => saveAdvance(emp)
+  }, "Save advance"), /*#__PURE__*/React.createElement("button", {
+    className: "btn ghost small",
+    onClick: () => {
+      setAdvanceFor(null);
+      setAdvanceAmt("");
+    }
+  }, "Cancel"))) : /*#__PURE__*/React.createElement("div", {
+    className: "actions"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "chip amber",
+    onClick: () => {
+      setAdvanceFor(emp.id);
+      setAdvanceAmt("");
+    }
+  }, "Advance"), /*#__PURE__*/React.createElement(ConfirmButton, {
+    className: "chip red",
+    label: "Remove",
+    confirmLabel: "Tap again to confirm",
+    onConfirm: () => removeEmployee(emp)
+  })))))), tab === "payroll" && /*#__PURE__*/React.createElement("div", {
+    className: "card"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "row"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "card-title"
+  }, "Payroll"), /*#__PURE__*/React.createElement("select", {
+    style: {
+      width: "auto"
+    },
+    value: month,
+    onChange: e => setMonth(e.target.value)
+  }, monthsSince(business.createdAt).map(mk => /*#__PURE__*/React.createElement("option", {
+    key: mk,
+    value: mk
+  }, fmtMonth(mk))))), business.employees.length === 0 && /*#__PURE__*/React.createElement("div", {
+    className: "muted",
+    style: {
+      marginTop: 12
+    }
+  }, "No employees yet."), business.employees.map(emp => {
+    const p = payrollFor(business, emp, month);
+    return /*#__PURE__*/React.createElement("div", {
+      key: emp.id,
+      className: "pay-box"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "row"
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontWeight: 700,
+        fontSize: 17
+      }
+    }, emp.name), /*#__PURE__*/React.createElement("div", {
+      className: "big-amount"
+    }, fmtMoney(p.net))), /*#__PURE__*/React.createElement("div", {
+      className: "pay-grid"
+    }, /*#__PURE__*/React.createElement("div", null, "Present: ", /*#__PURE__*/React.createElement("span", {
+      className: "num"
+    }, p.present, "d")), /*#__PURE__*/React.createElement("div", null, "Half-day: ", /*#__PURE__*/React.createElement("span", {
+      className: "num"
+    }, p.half, "d")), /*#__PURE__*/React.createElement("div", null, "Leave: ", /*#__PURE__*/React.createElement("span", {
+      className: "num"
+    }, p.leave, "d")), /*#__PURE__*/React.createElement("div", null, "Gross: ", /*#__PURE__*/React.createElement("span", {
+      className: "num"
+    }, fmtMoney(p.gross))), /*#__PURE__*/React.createElement("div", null, "Advances: ", /*#__PURE__*/React.createElement("span", {
+      className: "num"
+    }, "\u2212", fmtMoney(p.advances))), /*#__PURE__*/React.createElement("div", {
+      className: "pay-net"
+    }, "Net payable")));
+  })));
 }
 function EmployeeDashboard({
   business,
   employee,
   onLogout
 }) {
+  const [month, setMonth] = useState(monthKeyOf(todayKey()));
+  const p = payrollFor(business, employee, month);
+  const myAdvances = (business.advances || []).filter(a => a.employeeId === employee.id && monthKeyOf(a.date.slice(0, 10)) === month).sort((a, b) => new Date(b.date) - new Date(a.date));
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     className: "topbar"
-  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h2", null, employee.name), /*#__PURE__*/React.createElement("div", {
-    className: "sub"
-  }, business.name)), /*#__PURE__*/React.createElement("button", {
-    className: "btn secondary small",
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "eyebrow"
+  }, "Employee"), /*#__PURE__*/React.createElement("h2", null, employee.name), /*#__PURE__*/React.createElement("div", {
+    className: "muted"
+  }, business.name, " \xB7 ", fmtMoney(employee.salary), "/mo")), /*#__PURE__*/React.createElement("button", {
+    className: "btn outline small",
     onClick: onLogout
   }, "Log out")), /*#__PURE__*/React.createElement("div", {
     className: "card"
-  }, /*#__PURE__*/React.createElement(Ledger, {
-    business: business,
-    employee: employee,
-    readOnly: true
-  })));
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "row"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "card-title"
+  }, "Your month"), /*#__PURE__*/React.createElement("select", {
+    style: {
+      width: "auto"
+    },
+    value: month,
+    onChange: e => setMonth(e.target.value)
+  }, monthsSince(employee.createdAt).map(mk => /*#__PURE__*/React.createElement("option", {
+    key: mk,
+    value: mk
+  }, fmtMonth(mk))))), /*#__PURE__*/React.createElement("div", {
+    className: "pay-box"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "row"
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontWeight: 700
+    }
+  }, "Net payable"), /*#__PURE__*/React.createElement("div", {
+    className: "big-amount"
+  }, fmtMoney(p.net))), /*#__PURE__*/React.createElement("div", {
+    className: "pay-grid"
+  }, /*#__PURE__*/React.createElement("div", null, "Present: ", /*#__PURE__*/React.createElement("span", {
+    className: "num"
+  }, p.present, "d")), /*#__PURE__*/React.createElement("div", null, "Half-day: ", /*#__PURE__*/React.createElement("span", {
+    className: "num"
+  }, p.half, "d")), /*#__PURE__*/React.createElement("div", null, "Leave: ", /*#__PURE__*/React.createElement("span", {
+    className: "num"
+  }, p.leave, "d")), /*#__PURE__*/React.createElement("div", null, "Gross: ", /*#__PURE__*/React.createElement("span", {
+    className: "num"
+  }, fmtMoney(p.gross))), /*#__PURE__*/React.createElement("div", null, "Advances: ", /*#__PURE__*/React.createElement("span", {
+    className: "num"
+  }, "\u2212", fmtMoney(p.advances)))))), /*#__PURE__*/React.createElement("div", {
+    className: "card"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "card-title"
+  }, "Advances taken"), myAdvances.length === 0 && /*#__PURE__*/React.createElement("div", {
+    className: "muted",
+    style: {
+      marginTop: 10
+    }
+  }, "None this month."), myAdvances.map(a => /*#__PURE__*/React.createElement("div", {
+    key: a.id,
+    className: "list-item row"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "muted"
+  }, fmtDate(a.date)), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontWeight: 700
+    }
+  }, fmtMoney(a.amount))))));
 }
 function SuperDashboard({
   businesses,
@@ -977,17 +1239,17 @@ function SuperDashboard({
   const [openId, setOpenId] = useState(null);
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     className: "topbar"
-  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h2", null, "Platform owner"), /*#__PURE__*/React.createElement("div", {
-    className: "sub"
-  }, businesses.length, " business", businesses.length === 1 ? "" : "es", " registered")), /*#__PURE__*/React.createElement("button", {
-    className: "btn secondary small",
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "eyebrow"
+  }, "Platform owner"), /*#__PURE__*/React.createElement("h2", null, businesses.length, " business", businesses.length === 1 ? "" : "es", " registered")), /*#__PURE__*/React.createElement("button", {
+    className: "btn outline small",
     onClick: onLogout
   }, "Log out")), /*#__PURE__*/React.createElement("div", {
-    className: "notice",
+    className: "muted",
     style: {
       marginBottom: 14
     }
-  }, "Support view: owner PINs are shown here so you can help users who are locked out."), businesses.length === 0 && /*#__PURE__*/React.createElement("div", {
+  }, "Support view \u2014 owner PINs are visible here so you can help users who are locked out."), businesses.length === 0 && /*#__PURE__*/React.createElement("div", {
     className: "card muted"
   }, "No businesses registered yet."), businesses.map(b => /*#__PURE__*/React.createElement("div", {
     key: b.id,
@@ -996,21 +1258,21 @@ function SuperDashboard({
     className: "row"
   }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
-      fontWeight: 700
+      fontWeight: 700,
+      fontSize: 17
     }
   }, b.name), /*#__PURE__*/React.createElement("div", {
     className: "muted"
-  }, "Created ", fmtDate(b.createdAt), " \xB7 ", b.employees.length, " employee", b.employees.length === 1 ? "" : "s", b.ownerName ? " · Owner: " + b.ownerName : "")), /*#__PURE__*/React.createElement("button", {
-    className: "link-btn",
+  }, "Created ", fmtDate(b.createdAt), " \xB7 ", b.employees.length, " employee", b.employees.length === 1 ? "" : "s")), /*#__PURE__*/React.createElement("button", {
+    className: "btn ghost small",
     onClick: () => setOpenId(openId === b.id ? null : b.id)
   }, openId === b.id ? "Hide" : "Details")), openId === b.id && /*#__PURE__*/React.createElement("div", {
     style: {
-      marginTop: 10
+      marginTop: 12
     }
   }, /*#__PURE__*/React.createElement("div", {
-    className: "muted",
     style: {
-      marginBottom: 8
+      marginBottom: 10
     }
   }, "Admin PIN: ", /*#__PURE__*/React.createElement("span", {
     className: "pill"
@@ -1023,20 +1285,29 @@ function SuperDashboard({
     }
   }, emp.name), /*#__PURE__*/React.createElement("span", {
     className: "muted"
-  }, " \xB7 ", emp.phone, " \xB7 PIN ", emp.pin))), /*#__PURE__*/React.createElement("button", {
-    className: "btn danger",
-    onClick: () => {
-      if (window.confirm('Delete "' + b.name + '" and ALL its data? This cannot be undone.')) onDelete(b.id);
-    }
-  }, "Delete this business")))));
+  }, " \xB7 ", emp.phone, " \xB7 ", fmtMoney(emp.salary), "/mo \xB7 PIN ", emp.pin))), /*#__PURE__*/React.createElement(ConfirmButton, {
+    className: "btn red",
+    label: "Delete this business",
+    confirmLabel: "Tap again to delete permanently",
+    onConfirm: () => onDelete(b.id)
+  })))));
 }
 function App() {
   const [data, setData] = useState(loadData);
-  const [session, setSession] = useState(null); // {role, businessId, employeeId}
-
+  const [session, setSession] = useState(null);
+  const [toast, setToast] = useState(null);
+  const toastTimer = useRef(null);
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   }, [data]);
+  const showToast = (msg, kind) => {
+    clearTimeout(toastTimer.current);
+    setToast({
+      msg,
+      kind: kind || "ok"
+    });
+    toastTimer.current = setTimeout(() => setToast(null), 3200);
+  };
   const updateBusiness = updated => {
     setData(d => ({
       ...d,
@@ -1045,17 +1316,16 @@ function App() {
   };
   const signup = ({
     name,
-    ownerName,
     pin
   }) => {
     const biz = {
       id: uid(),
       name,
-      ownerName,
       pin,
       createdAt: new Date().toISOString(),
       employees: [],
-      entries: []
+      attendance: {},
+      advances: []
     };
     setData(d => ({
       ...d,
@@ -1065,18 +1335,21 @@ function App() {
       role: "admin",
       businessId: biz.id
     });
+    showToast('"' + name + '" created — you are logged in');
   };
   const deleteBusiness = bizId => {
     setData(d => ({
       ...d,
       businesses: d.businesses.filter(b => b.id !== bizId)
     }));
+    showToast("Business deleted");
   };
   const logout = () => setSession(null);
   let screen;
   if (!session) {
     screen = /*#__PURE__*/React.createElement(Landing, {
       businesses: data.businesses,
+      showToast: showToast,
       onAdminLogin: businessId => setSession({
         role: "admin",
         businessId
@@ -1106,7 +1379,8 @@ function App() {
       screen = /*#__PURE__*/React.createElement(AdminDashboard, {
         business: biz,
         onUpdate: updateBusiness,
-        onLogout: logout
+        onLogout: logout,
+        showToast: showToast
       });
     } else {
       const emp = biz.employees.find(x => x.id === session.employeeId);
@@ -1122,6 +1396,8 @@ function App() {
   }
   return /*#__PURE__*/React.createElement("div", {
     className: "shell"
-  }, screen);
+  }, toast && /*#__PURE__*/React.createElement("div", {
+    className: "toast " + toast.kind
+  }, toast.msg), screen);
 }
 ReactDOM.createRoot(document.getElementById("root")).render(/*#__PURE__*/React.createElement(App, null));</script>
