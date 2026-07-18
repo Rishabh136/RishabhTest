@@ -187,6 +187,10 @@ const fmtDate = (iso) =>
 const fmtLongDate = (d) =>
   d.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
 const fmtMoney = (n) => "₹" + Math.round(Number(n || 0)).toLocaleString("en-IN");
+const nowTime = () =>
+  new Date().toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" });
+// Attendance marks used to be plain strings; normalize to {s, t, by}
+const normMark = (v) => (typeof v === "string" ? { s: v } : v || null);
 
 const todayKey = () => {
   const d = new Date();
@@ -213,6 +217,14 @@ function monthsSince(startIso) {
   return out.reverse();
 }
 
+// Earliest month with any activity, so backdated advances stay reachable
+function monthsForBiz(biz) {
+  let earliest = biz.createdAt.slice(0, 10);
+  for (const d of Object.keys(biz.attendance || {})) if (d < earliest) earliest = d;
+  for (const a of biz.advances || []) { const d = a.date.slice(0, 10); if (d < earliest) earliest = d; }
+  return monthsSince(earliest);
+}
+
 const isPin = (s) => /^\d{4}$/.test(s);
 const isPhone = (s) => /^\d{10}$/.test(s);
 
@@ -221,10 +233,11 @@ function payrollFor(biz, emp, mk) {
   let present = 0, half = 0, leave = 0;
   for (const [date, marks] of Object.entries(biz.attendance || {})) {
     if (monthKeyOf(date) !== mk) continue;
-    const v = marks[emp.id];
-    if (v === "P") present++;
-    else if (v === "H") half++;
-    else if (v === "L") leave++;
+    const rec = normMark(marks[emp.id]);
+    if (!rec) continue;
+    if (rec.s === "P") present++;
+    else if (rec.s === "H") half++;
+    else if (rec.s === "L") leave++;
   }
   const perDay = (emp.salary || 0) / daysInMonth(mk);
   const gross = Math.round(perDay * (present + 0.5 * half));
@@ -503,6 +516,7 @@ function AdminDashboard({ business, onUpdate, onLogout, showToast }) {
   const [adding, setAdding] = useState(false);
   const [advanceFor, setAdvanceFor] = useState(null);
   const [advanceAmt, setAdvanceAmt] = useState("");
+  const [advanceDate, setAdvanceDate] = useState(todayKey());
   const [month, setMonth] = useState(monthKeyOf(todayKey()));
 
   const tKey = todayKey();
@@ -510,7 +524,7 @@ function AdminDashboard({ business, onUpdate, onLogout, showToast }) {
 
   const mark = (empId, v) => {
     const attendance = { ...(business.attendance || {}) };
-    attendance[tKey] = { ...(attendance[tKey] || {}), [empId]: v };
+    attendance[tKey] = { ...(attendance[tKey] || {}), [empId]: { s: v, t: nowTime(), by: "adm" } };
     onUpdate({ ...business, attendance });
   };
 
@@ -544,13 +558,22 @@ function AdminDashboard({ business, onUpdate, onLogout, showToast }) {
   const saveAdvance = (emp) => {
     const amt = Number(advanceAmt);
     if (!amt || amt <= 0) { showToast("Enter an advance amount above 0", "error"); return; }
+    if (!advanceDate) { showToast("Pick the date of the advance", "error"); return; }
     onUpdate({
       ...business,
-      advances: [...(business.advances || []), { id: uid(), employeeId: emp.id, amount: amt, date: new Date().toISOString() }],
+      advances: [...(business.advances || []), {
+        id: uid(), employeeId: emp.id, amount: amt,
+        date: advanceDate, recordedAt: new Date().toISOString(),
+      }],
     });
     setAdvanceFor(null);
     setAdvanceAmt("");
-    showToast("Advance of " + fmtMoney(amt) + " recorded for " + emp.name);
+    showToast("Advance of " + fmtMoney(amt) + " on " + fmtDate(advanceDate) + " recorded for " + emp.name);
+  };
+
+  const removeAdvance = (adv) => {
+    onUpdate({ ...business, advances: (business.advances || []).filter((a) => a.id !== adv.id) });
+    showToast("Advance of " + fmtMoney(adv.amount) + " deleted");
   };
 
   const statusLabel = { P: "Present", H: "Half-day", L: "Leave" };
@@ -578,12 +601,15 @@ function AdminDashboard({ business, onUpdate, onLogout, showToast }) {
             <div className="muted" style={{ marginTop: 12 }}>No employees yet — add them in the Employees tab.</div>
           )}
           {business.employees.map((emp) => {
-            const v = attToday[emp.id];
+            const rec = normMark(attToday[emp.id]);
+            const v = rec && rec.s;
             return (
               <div key={emp.id} className="emp-box">
                 <div className="row">
                   <div style={{ fontWeight: 700, fontSize: 17 }}>{emp.name}</div>
-                  <div className={"status " + (v || "")}>{v ? statusLabel[v] : "Not marked"}</div>
+                  <div className={"status " + (v || "")}>
+                    {rec ? statusLabel[v] + (rec.t ? " · " + rec.t : "") + (rec.by === "emp" ? " (self)" : "") : "Not marked"}
+                  </div>
                 </div>
                 <div className="actions" style={{ display: "flex", gap: 10, marginTop: 12 }}>
                   <button className={"chip green" + (v && v !== "P" ? " dim" : "")} onClick={() => mark(emp.id, "P")}>Present</button>
@@ -621,9 +647,18 @@ function AdminDashboard({ business, onUpdate, onLogout, showToast }) {
                   <div className="muted" style={{ marginTop: 4 }}>{emp.phone}</div>
                   {advanceFor === emp.id ? (
                     <div className="mini-form">
-                      <label style={{ marginTop: 0 }}>Advance amount (₹)</label>
-                      <input inputMode="numeric" value={advanceAmt} autoFocus
-                        onChange={(e) => setAdvanceAmt(e.target.value.replace(/\D/g, ""))} />
+                      <div className="grid2">
+                        <div>
+                          <label style={{ marginTop: 0 }}>Amount (₹)</label>
+                          <input inputMode="numeric" value={advanceAmt} autoFocus
+                            onChange={(e) => setAdvanceAmt(e.target.value.replace(/\D/g, ""))} />
+                        </div>
+                        <div>
+                          <label style={{ marginTop: 0 }}>Date given</label>
+                          <input type="date" value={advanceDate} max={todayKey()}
+                            onChange={(e) => setAdvanceDate(e.target.value)} />
+                        </div>
+                      </div>
                       <div className="actions">
                         <button className="chip amber" onClick={() => saveAdvance(emp)}>Save advance</button>
                         <button className="btn ghost small" onClick={() => { setAdvanceFor(null); setAdvanceAmt(""); }}>Cancel</button>
@@ -631,9 +666,27 @@ function AdminDashboard({ business, onUpdate, onLogout, showToast }) {
                     </div>
                   ) : (
                     <div className="actions">
-                      <button className="chip amber" onClick={() => { setAdvanceFor(emp.id); setAdvanceAmt(""); }}>Advance</button>
+                      <button className="chip amber" onClick={() => { setAdvanceFor(emp.id); setAdvanceAmt(""); setAdvanceDate(todayKey()); }}>Advance</button>
                       <ConfirmButton className="chip red" label="Remove" confirmLabel="Tap again to confirm"
                         onConfirm={() => removeEmployee(emp)} />
+                    </div>
+                  )}
+                  {(business.advances || []).some((a) => a.employeeId === emp.id) && (
+                    <div style={{ marginTop: 12 }}>
+                      <div className="muted" style={{ fontWeight: 700, marginBottom: 2 }}>Advances given</div>
+                      {(business.advances || [])
+                        .filter((a) => a.employeeId === emp.id)
+                        .sort((a, b) => (a.date < b.date ? 1 : -1))
+                        .map((a) => (
+                          <div key={a.id} className="list-item row">
+                            <div className="muted">{fmtDate(a.date)}</div>
+                            <div className="row" style={{ gap: 12 }}>
+                              <span style={{ fontWeight: 700 }}>{fmtMoney(a.amount)}</span>
+                              <ConfirmButton className="btn ghost small" label="✕" confirmLabel="Delete?"
+                                onConfirm={() => removeAdvance(a)} />
+                            </div>
+                          </div>
+                        ))}
                     </div>
                   )}
                 </div>
@@ -648,7 +701,7 @@ function AdminDashboard({ business, onUpdate, onLogout, showToast }) {
           <div className="row">
             <div className="card-title">Payroll</div>
             <select style={{ width: "auto" }} value={month} onChange={(e) => setMonth(e.target.value)}>
-              {monthsSince(business.createdAt).map((mk) => (
+              {monthsForBiz(business).map((mk) => (
                 <option key={mk} value={mk}>{fmtMonth(mk)}</option>
               ))}
             </select>
@@ -681,12 +734,24 @@ function AdminDashboard({ business, onUpdate, onLogout, showToast }) {
   );
 }
 
-function EmployeeDashboard({ business, employee, onLogout }) {
+function EmployeeDashboard({ business, employee, onUpdate, onLogout, showToast }) {
   const [month, setMonth] = useState(monthKeyOf(todayKey()));
   const p = payrollFor(business, employee, month);
   const myAdvances = (business.advances || [])
     .filter((a) => a.employeeId === employee.id && monthKeyOf(a.date.slice(0, 10)) === month)
-    .sort((a, b) => new Date(b.date) - new Date(a.date));
+    .sort((a, b) => (a.date < b.date ? 1 : -1));
+
+  const tKey = todayKey();
+  const todayRec = normMark(((business.attendance || {})[tKey] || {})[employee.id]);
+  const statusLabel = { P: "Present", H: "Half-day", L: "Leave" };
+
+  const checkIn = (s) => {
+    const t = nowTime();
+    const attendance = { ...(business.attendance || {}) };
+    attendance[tKey] = { ...(attendance[tKey] || {}), [employee.id]: { s, t, by: "emp" } };
+    onUpdate({ ...business, attendance });
+    showToast(s === "P" ? "Checked in at " + t : "Marked on leave at " + t);
+  };
 
   return (
     <div>
@@ -700,10 +765,28 @@ function EmployeeDashboard({ business, employee, onLogout }) {
       </div>
 
       <div className="card">
+        <div className="card-title">Today — {fmtLongDate(new Date())}</div>
+        {todayRec ? (
+          <div style={{ marginTop: 10 }}>
+            <span className={"status " + todayRec.s}>
+              {statusLabel[todayRec.s]}{todayRec.t ? " · " + todayRec.t : ""}
+            </span>
+            <span className="muted"> {todayRec.by === "emp" ? "(marked by you)" : "(marked by admin)"}</span>
+            <div className="muted" style={{ marginTop: 6 }}>Need a change? Ask your admin.</div>
+          </div>
+        ) : (
+          <div className="actions" style={{ display: "flex", gap: 10, marginTop: 12 }}>
+            <button className="chip green" onClick={() => checkIn("P")}>Check in — Present</button>
+            <button className="chip red" onClick={() => checkIn("L")}>On leave today</button>
+          </div>
+        )}
+      </div>
+
+      <div className="card">
         <div className="row">
           <div className="card-title">Your month</div>
           <select style={{ width: "auto" }} value={month} onChange={(e) => setMonth(e.target.value)}>
-            {monthsSince(employee.createdAt).map((mk) => (
+            {monthsForBiz(business).map((mk) => (
               <option key={mk} value={mk}>{fmtMonth(mk)}</option>
             ))}
           </select>
@@ -851,7 +934,7 @@ function App() {
     } else {
       const emp = biz.employees.find((x) => x.id === session.employeeId);
       if (!emp) { screen = null; setTimeout(logout, 0); }
-      else screen = <EmployeeDashboard business={biz} employee={emp} onLogout={logout} />;
+      else screen = <EmployeeDashboard business={biz} employee={emp} onUpdate={updateBusiness} onLogout={logout} showToast={showToast} />;
     }
   }
 

@@ -481,6 +481,14 @@ const fmtLongDate = d => d.toLocaleDateString("en-IN", {
   year: "numeric"
 });
 const fmtMoney = n => "₹" + Math.round(Number(n || 0)).toLocaleString("en-IN");
+const nowTime = () => new Date().toLocaleTimeString("en-IN", {
+  hour: "numeric",
+  minute: "2-digit"
+});
+// Attendance marks used to be plain strings; normalize to {s, t, by}
+const normMark = v => typeof v === "string" ? {
+  s: v
+} : v || null;
 const todayKey = () => {
   const d = new Date();
   return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
@@ -513,6 +521,17 @@ function monthsSince(startIso) {
   }
   return out.reverse();
 }
+
+// Earliest month with any activity, so backdated advances stay reachable
+function monthsForBiz(biz) {
+  let earliest = biz.createdAt.slice(0, 10);
+  for (const d of Object.keys(biz.attendance || {})) if (d < earliest) earliest = d;
+  for (const a of biz.advances || []) {
+    const d = a.date.slice(0, 10);
+    if (d < earliest) earliest = d;
+  }
+  return monthsSince(earliest);
+}
 const isPin = s => /^\d{4}$/.test(s);
 const isPhone = s => /^\d{10}$/.test(s);
 
@@ -523,8 +542,9 @@ function payrollFor(biz, emp, mk) {
     leave = 0;
   for (const [date, marks] of Object.entries(biz.attendance || {})) {
     if (monthKeyOf(date) !== mk) continue;
-    const v = marks[emp.id];
-    if (v === "P") present++;else if (v === "H") half++;else if (v === "L") leave++;
+    const rec = normMark(marks[emp.id]);
+    if (!rec) continue;
+    if (rec.s === "P") present++;else if (rec.s === "H") half++;else if (rec.s === "L") leave++;
   }
   const perDay = (emp.salary || 0) / daysInMonth(mk);
   const gross = Math.round(perDay * (present + 0.5 * half));
@@ -894,6 +914,7 @@ function AdminDashboard({
   const [adding, setAdding] = useState(false);
   const [advanceFor, setAdvanceFor] = useState(null);
   const [advanceAmt, setAdvanceAmt] = useState("");
+  const [advanceDate, setAdvanceDate] = useState(todayKey());
   const [month, setMonth] = useState(monthKeyOf(todayKey()));
   const tKey = todayKey();
   const attToday = (business.attendance || {})[tKey] || {};
@@ -903,7 +924,11 @@ function AdminDashboard({
     };
     attendance[tKey] = {
       ...(attendance[tKey] || {}),
-      [empId]: v
+      [empId]: {
+        s: v,
+        t: nowTime(),
+        by: "adm"
+      }
     };
     onUpdate({
       ...business,
@@ -954,18 +979,30 @@ function AdminDashboard({
       showToast("Enter an advance amount above 0", "error");
       return;
     }
+    if (!advanceDate) {
+      showToast("Pick the date of the advance", "error");
+      return;
+    }
     onUpdate({
       ...business,
       advances: [...(business.advances || []), {
         id: uid(),
         employeeId: emp.id,
         amount: amt,
-        date: new Date().toISOString()
+        date: advanceDate,
+        recordedAt: new Date().toISOString()
       }]
     });
     setAdvanceFor(null);
     setAdvanceAmt("");
-    showToast("Advance of " + fmtMoney(amt) + " recorded for " + emp.name);
+    showToast("Advance of " + fmtMoney(amt) + " on " + fmtDate(advanceDate) + " recorded for " + emp.name);
+  };
+  const removeAdvance = adv => {
+    onUpdate({
+      ...business,
+      advances: (business.advances || []).filter(a => a.id !== adv.id)
+    });
+    showToast("Advance of " + fmtMoney(adv.amount) + " deleted");
   };
   const statusLabel = {
     P: "Present",
@@ -1003,7 +1040,8 @@ function AdminDashboard({
       marginTop: 12
     }
   }, "No employees yet \u2014 add them in the Employees tab."), business.employees.map(emp => {
-    const v = attToday[emp.id];
+    const rec = normMark(attToday[emp.id]);
+    const v = rec && rec.s;
     return /*#__PURE__*/React.createElement("div", {
       key: emp.id,
       className: "emp-box"
@@ -1016,7 +1054,7 @@ function AdminDashboard({
       }
     }, emp.name), /*#__PURE__*/React.createElement("div", {
       className: "status " + (v || "")
-    }, v ? statusLabel[v] : "Not marked")), /*#__PURE__*/React.createElement("div", {
+    }, rec ? statusLabel[v] + (rec.t ? " · " + rec.t : "") + (rec.by === "emp" ? " (self)" : "") : "Not marked")), /*#__PURE__*/React.createElement("div", {
       className: "actions",
       style: {
         display: "flex",
@@ -1073,16 +1111,27 @@ function AdminDashboard({
     }
   }, emp.phone), advanceFor === emp.id ? /*#__PURE__*/React.createElement("div", {
     className: "mini-form"
-  }, /*#__PURE__*/React.createElement("label", {
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "grid2"
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", {
     style: {
       marginTop: 0
     }
-  }, "Advance amount (\u20B9)"), /*#__PURE__*/React.createElement("input", {
+  }, "Amount (\u20B9)"), /*#__PURE__*/React.createElement("input", {
     inputMode: "numeric",
     value: advanceAmt,
     autoFocus: true,
     onChange: e => setAdvanceAmt(e.target.value.replace(/\D/g, ""))
-  }), /*#__PURE__*/React.createElement("div", {
+  })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", {
+    style: {
+      marginTop: 0
+    }
+  }, "Date given"), /*#__PURE__*/React.createElement("input", {
+    type: "date",
+    value: advanceDate,
+    max: todayKey(),
+    onChange: e => setAdvanceDate(e.target.value)
+  }))), /*#__PURE__*/React.createElement("div", {
     className: "actions"
   }, /*#__PURE__*/React.createElement("button", {
     className: "chip amber",
@@ -1100,13 +1149,43 @@ function AdminDashboard({
     onClick: () => {
       setAdvanceFor(emp.id);
       setAdvanceAmt("");
+      setAdvanceDate(todayKey());
     }
   }, "Advance"), /*#__PURE__*/React.createElement(ConfirmButton, {
     className: "chip red",
     label: "Remove",
     confirmLabel: "Tap again to confirm",
     onConfirm: () => removeEmployee(emp)
-  })))))), tab === "payroll" && /*#__PURE__*/React.createElement("div", {
+  })), (business.advances || []).some(a => a.employeeId === emp.id) && /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 12
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "muted",
+    style: {
+      fontWeight: 700,
+      marginBottom: 2
+    }
+  }, "Advances given"), (business.advances || []).filter(a => a.employeeId === emp.id).sort((a, b) => a.date < b.date ? 1 : -1).map(a => /*#__PURE__*/React.createElement("div", {
+    key: a.id,
+    className: "list-item row"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "muted"
+  }, fmtDate(a.date)), /*#__PURE__*/React.createElement("div", {
+    className: "row",
+    style: {
+      gap: 12
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontWeight: 700
+    }
+  }, fmtMoney(a.amount)), /*#__PURE__*/React.createElement(ConfirmButton, {
+    className: "btn ghost small",
+    label: "\u2715",
+    confirmLabel: "Delete?",
+    onConfirm: () => removeAdvance(a)
+  }))))))))), tab === "payroll" && /*#__PURE__*/React.createElement("div", {
     className: "card"
   }, /*#__PURE__*/React.createElement("div", {
     className: "row"
@@ -1118,7 +1197,7 @@ function AdminDashboard({
     },
     value: month,
     onChange: e => setMonth(e.target.value)
-  }, monthsSince(business.createdAt).map(mk => /*#__PURE__*/React.createElement("option", {
+  }, monthsForBiz(business).map(mk => /*#__PURE__*/React.createElement("option", {
     key: mk,
     value: mk
   }, fmtMonth(mk))))), business.employees.length === 0 && /*#__PURE__*/React.createElement("div", {
@@ -1160,11 +1239,39 @@ function AdminDashboard({
 function EmployeeDashboard({
   business,
   employee,
-  onLogout
+  onUpdate,
+  onLogout,
+  showToast
 }) {
   const [month, setMonth] = useState(monthKeyOf(todayKey()));
   const p = payrollFor(business, employee, month);
-  const myAdvances = (business.advances || []).filter(a => a.employeeId === employee.id && monthKeyOf(a.date.slice(0, 10)) === month).sort((a, b) => new Date(b.date) - new Date(a.date));
+  const myAdvances = (business.advances || []).filter(a => a.employeeId === employee.id && monthKeyOf(a.date.slice(0, 10)) === month).sort((a, b) => a.date < b.date ? 1 : -1);
+  const tKey = todayKey();
+  const todayRec = normMark(((business.attendance || {})[tKey] || {})[employee.id]);
+  const statusLabel = {
+    P: "Present",
+    H: "Half-day",
+    L: "Leave"
+  };
+  const checkIn = s => {
+    const t = nowTime();
+    const attendance = {
+      ...(business.attendance || {})
+    };
+    attendance[tKey] = {
+      ...(attendance[tKey] || {}),
+      [employee.id]: {
+        s,
+        t,
+        by: "emp"
+      }
+    };
+    onUpdate({
+      ...business,
+      attendance
+    });
+    showToast(s === "P" ? "Checked in at " + t : "Marked on leave at " + t);
+  };
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     className: "topbar"
   }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
@@ -1177,6 +1284,36 @@ function EmployeeDashboard({
   }, "Log out")), /*#__PURE__*/React.createElement("div", {
     className: "card"
   }, /*#__PURE__*/React.createElement("div", {
+    className: "card-title"
+  }, "Today \u2014 ", fmtLongDate(new Date())), todayRec ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 10
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "status " + todayRec.s
+  }, statusLabel[todayRec.s], todayRec.t ? " · " + todayRec.t : ""), /*#__PURE__*/React.createElement("span", {
+    className: "muted"
+  }, " ", todayRec.by === "emp" ? "(marked by you)" : "(marked by admin)"), /*#__PURE__*/React.createElement("div", {
+    className: "muted",
+    style: {
+      marginTop: 6
+    }
+  }, "Need a change? Ask your admin.")) : /*#__PURE__*/React.createElement("div", {
+    className: "actions",
+    style: {
+      display: "flex",
+      gap: 10,
+      marginTop: 12
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "chip green",
+    onClick: () => checkIn("P")
+  }, "Check in \u2014 Present"), /*#__PURE__*/React.createElement("button", {
+    className: "chip red",
+    onClick: () => checkIn("L")
+  }, "On leave today"))), /*#__PURE__*/React.createElement("div", {
+    className: "card"
+  }, /*#__PURE__*/React.createElement("div", {
     className: "row"
   }, /*#__PURE__*/React.createElement("div", {
     className: "card-title"
@@ -1186,7 +1323,7 @@ function EmployeeDashboard({
     },
     value: month,
     onChange: e => setMonth(e.target.value)
-  }, monthsSince(employee.createdAt).map(mk => /*#__PURE__*/React.createElement("option", {
+  }, monthsForBiz(business).map(mk => /*#__PURE__*/React.createElement("option", {
     key: mk,
     value: mk
   }, fmtMonth(mk))))), /*#__PURE__*/React.createElement("div", {
@@ -1390,7 +1527,9 @@ function App() {
       } else screen = /*#__PURE__*/React.createElement(EmployeeDashboard, {
         business: biz,
         employee: emp,
-        onLogout: logout
+        onUpdate: updateBusiness,
+        onLogout: logout,
+        showToast: showToast
       });
     }
   }
