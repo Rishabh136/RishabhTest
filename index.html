@@ -307,16 +307,15 @@ function Landing({ businesses, showToast, onAdminLogin, onSignup, onEmployeeLogi
   const [signupConfirm, setSignupConfirm] = useState("");
   const [dupWarned, setDupWarned] = useState(false);
 
-  const [empSearch, setEmpSearch] = useState("");
-  const [empBizId, setEmpBizId] = useState(null);
   const [empPhone, setEmpPhone] = useState("");
   const [empPin, setEmpPin] = useState("");
+  const [empChoices, setEmpChoices] = useState(null);
 
   const [superKey, setSuperKey] = useState("");
 
   // Every form keeps its own PIN state; clear them all whenever the
   // screen or tab changes so digits never carry over between forms.
-  const resetPins = () => { setLoginPin(""); setSignupPin(""); setSignupConfirm(""); setEmpPin(""); setSuperKey(""); setDupWarned(false); };
+  const resetPins = () => { setLoginPin(""); setSignupPin(""); setSignupConfirm(""); setEmpPin(""); setSuperKey(""); setDupWarned(false); setEmpChoices(null); };
   const go = (m) => { setMode(m); setAuthTab("login"); resetPins(); };
   const switchAuthTab = (t) => { setAuthTab(t); resetPins(); };
 
@@ -351,17 +350,23 @@ function Landing({ businesses, showToast, onAdminLogin, onSignup, onEmployeeLogi
     onSignup({ name, pin: signupPin });
   };
 
+  // Employees just enter phone + PIN; their business is found automatically.
+  // Only if the same phone+PIN exists at two businesses do we ask which one.
   const submitEmployeeLogin = (e) => {
     e.preventDefault();
-    const biz = businesses.find((b) => b.id === empBizId);
-    if (!biz) { showToast("Select your business from the list first", "error"); return; }
-    const emp = biz.employees.find((x) => x.phone === empPhone.trim() && x.pin === empPin);
-    if (!emp) {
+    if (!isPhone(empPhone)) { showToast("Enter your 10-digit phone number", "error"); return; }
+    const matches = [];
+    for (const b of businesses) {
+      const emp = b.employees.find((x) => x.phone === empPhone && x.pin === empPin);
+      if (emp) matches.push({ biz: b, emp });
+    }
+    if (matches.length === 0) {
       showToast("No match — check phone/PIN with your admin", "error");
       setEmpPin("");
       return;
     }
-    onEmployeeLogin(biz.id, emp.id);
+    if (matches.length === 1) { onEmployeeLogin(matches[0].biz.id, matches[0].emp.id); return; }
+    setEmpChoices(matches);
   };
 
   const submitSuper = (e) => {
@@ -442,21 +447,33 @@ function Landing({ businesses, showToast, onAdminLogin, onSignup, onEmployeeLogi
 
       {mode === "employee" && (
         <div className="card">
-          <form onSubmit={submitEmployeeLogin}>
-            <BizPicker
-              businesses={businesses}
-              search={empSearch} onSearch={setEmpSearch}
-              selectedId={empBizId} onSelect={setEmpBizId}
-              label="Your business"
-            />
-            <label>Phone</label>
-            <input inputMode="numeric" maxLength="10" value={empPhone}
-              onChange={(e) => setEmpPhone(e.target.value.replace(/\D/g, ""))} />
-            <label>PIN</label>
-            <input type="password" inputMode="numeric" maxLength="4" value={empPin}
-              onChange={(e) => setEmpPin(e.target.value.replace(/\D/g, ""))} />
-            <button className="btn" type="submit">Login</button>
-          </form>
+          {empChoices ? (
+            <div>
+              <div className="card-title">Pick your business</div>
+              <div className="muted" style={{ marginTop: 6 }}>
+                This phone number is registered at more than one business.
+              </div>
+              {empChoices.map(({ biz, emp }) => (
+                <button key={biz.id} type="button" className="biz-option"
+                  onClick={() => onEmployeeLogin(biz.id, emp.id)}>
+                  {biz.name}
+                  <span className="meta">Created {fmtDate(biz.createdAt)}</span>
+                </button>
+              ))}
+              <button className="btn ghost" onClick={() => setEmpChoices(null)}>Back</button>
+            </div>
+          ) : (
+            <form onSubmit={submitEmployeeLogin}>
+              <div className="card-title">Employee login</div>
+              <label>Phone</label>
+              <input inputMode="numeric" maxLength="10" value={empPhone}
+                onChange={(e) => setEmpPhone(e.target.value.replace(/\D/g, ""))} />
+              <label>PIN</label>
+              <input type="password" inputMode="numeric" maxLength="4" value={empPin}
+                onChange={(e) => setEmpPin(e.target.value.replace(/\D/g, ""))} />
+              <button className="btn" type="submit">Login</button>
+            </form>
+          )}
         </div>
       )}
 
